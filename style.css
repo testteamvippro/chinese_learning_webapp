@@ -485,6 +485,85 @@ a:hover { text-decoration: underline; }
 .cy-example-en { font-size: .8rem; color: var(--text-muted); margin-top: .2rem; }
 .cy-level { font-size: .72rem; font-weight: 700; margin-top: .7rem; }
 
+/* ---------- WRITING PAD ---------- */
+.writing-layout {
+  display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+/* Reference panel */
+.writing-ref-panel {
+  flex: 0 0 200px; background: var(--card);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 1.4rem; text-align: center;
+}
+.writing-ref-label {
+  font-size: .75rem; text-transform: uppercase; letter-spacing: .08em;
+  color: var(--text-muted); margin-bottom: .6rem;
+}
+.writing-ref-char {
+  font-family: var(--font-cn); font-size: 5rem; line-height: 1;
+  color: var(--accent); margin-bottom: .4rem;
+  transition: opacity .2s;
+}
+.writing-ref-char.hidden { opacity: 0; }
+.writing-ref-pinyin { font-size: .95rem; color: var(--t2); font-style: italic; margin-bottom: .25rem; }
+.writing-ref-meaning { font-size: .85rem; color: var(--text-muted); margin-bottom: .8rem; }
+.writing-ref-strokes {
+  font-size: .75rem; color: var(--text-muted); margin-bottom: .9rem;
+  min-height: 1.2rem;
+}
+.writing-nav-btns {
+  display: flex; align-items: center; justify-content: center;
+  gap: .4rem; margin-top: 1rem; flex-wrap: wrap;
+}
+.writing-counter { font-size: .8rem; color: var(--text-muted); }
+
+/* Canvas panel */
+.writing-canvas-panel { flex: 1; min-width: 260px; }
+.writing-canvas-wrap {
+  position: relative; display: inline-block;
+  border: 2px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; background: #fff; cursor: crosshair;
+  box-shadow: 0 4px 20px rgba(0,0,0,.15);
+  max-width: 100%;
+}
+#writing-canvas {
+  display: block; touch-action: none;
+  max-width: 100%; height: auto;
+}
+.writing-controls {
+  display: flex; gap: .75rem; align-items: center;
+  flex-wrap: wrap; margin-top: .8rem;
+}
+.writing-hint {
+  font-size: .78rem; color: var(--text-muted);
+  margin-top: .5rem; font-style: italic;
+}
+
+/* Practice queue strip */
+.writing-queue {
+  display: flex; gap: .5rem; flex-wrap: wrap;
+  margin-top: 1.8rem;
+}
+.wq-chip {
+  font-family: var(--font-cn); font-size: 1.3rem;
+  padding: .35rem .6rem; border-radius: var(--radius-sm);
+  background: var(--card); border: 2px solid var(--border);
+  cursor: pointer; transition: border-color .15s, transform .1s;
+  position: relative;
+}
+.wq-chip:hover { border-color: var(--accent); transform: scale(1.1); }
+.wq-chip.active { border-color: var(--primary); background: rgba(79,126,248,.1); }
+.wq-chip.done { border-color: var(--success); }
+.wq-chip.done::after {
+  content: '✓'; position: absolute; top: -6px; right: -5px;
+  font-size: .65rem; background: var(--success); color: #fff;
+  border-radius: 50%; width: 14px; height: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: sans-serif;
+}
+
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 700px) {
   .main-nav { display: none; flex-direction: column; position: absolute; top: 60px; left: 0; right: 0; background: var(--bg2); border-bottom: 1px solid var(--border); padding: 1rem; }
@@ -496,4 +575,7 @@ a:hover { text-decoration: underline; }
   .flashcard { height: 230px; }
   .fc-char { font-size: 3rem; }
   .fc-nav { justify-content: center; }
+  .writing-layout { flex-direction: column; }
+  .writing-ref-panel { flex: 0 0 auto; width: 100%; }
+  #writing-canvas { width: 100%; height: auto; }
 }

@@ -10,6 +10,10 @@ const state = {
   quizLevel: 1,
   grammarLevel: 1,
   readingLevel: 1,
+  writingLevel: 1,
+  writingIndex: 0,
+  writingCards: [],
+  writingDone: {},
   fcIndex: 0,
   fcCards: [],
   quizQuestions: [],
@@ -56,6 +60,7 @@ function showView(viewName) {
   if (viewName === 'grammar')    renderGrammar(state.grammarLevel);
   if (viewName === 'reading')    renderReading(state.readingLevel);
   if (viewName === 'chengyu')    renderChengyu('');
+  if (viewName === 'writing')    renderWriting(state.writingLevel);
 }
 
 // Wire up nav links
@@ -573,6 +578,273 @@ function escHtml(str) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
+
+// =============================================
+//  WRITING PAD
+// =============================================
+
+// ---- Canvas setup (lazy, once per view activation) ----
+let _canvasReady = false;
+let _strokeHistory = [];  // array of path arrays for undo
+let _currentPath = [];    // current in-progress stroke
+
+function renderWriting(level) {
+  state.writingLevel = level;
+  setActiveTab('writing-level-tabs', level);
+  const pool = shuffle([...HSK_DATA[level]]);
+  state.writingCards = pool.slice(0, 15);
+  state.writingIndex = 0;
+  state.writingDone = {};
+  _strokeHistory = [];
+  _currentPath = [];
+
+  renderWritingQueue();
+  loadWritingChar();
+  if (!_canvasReady) initWritingCanvas();
+  else redrawCanvas();
+}
+
+function loadWritingChar() {
+  const card = state.writingCards[state.writingIndex];
+  if (!card) return;
+
+  const refChar = document.getElementById('writing-ref-char');
+  const refPinyin = document.getElementById('writing-ref-pinyin');
+  const refMeaning = document.getElementById('writing-ref-meaning');
+  const refStrokes = document.getElementById('writing-ref-strokes');
+  const counter = document.getElementById('writing-counter');
+
+  // Preserve hide state
+  const isHidden = refChar.classList.contains('hidden');
+  refChar.textContent = card.char;
+  if (isHidden) refChar.classList.add('hidden');
+  refPinyin.textContent = card.pinyin;
+  refMeaning.textContent = card.meaning;
+  refStrokes.textContent = ''; // stroke count lookup not available in static data
+  counter.textContent = `${state.writingIndex + 1} / ${state.writingCards.length}`;
+
+  // Update toggle button label
+  document.getElementById('writing-toggle-ref').textContent =
+    isHidden ? 'Show Reference' : 'Hide Reference';
+
+  // Clear canvas for new character
+  _strokeHistory = [];
+  _currentPath = [];
+  redrawCanvas();
+  renderWritingQueue();
+}
+
+function renderWritingQueue() {
+  const queue = document.getElementById('writing-queue');
+  queue.innerHTML = state.writingCards.map((c, i) => {
+    const active = i === state.writingIndex;
+    const done = state.writingDone[i];
+    return `<div class="wq-chip${active ? ' active' : ''}${done ? ' done' : ''}" data-wi="${i}">${escHtml(c.char)}</div>`;
+  }).join('');
+
+  queue.querySelectorAll('.wq-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      state.writingIndex = parseInt(chip.getAttribute('data-wi'));
+      loadWritingChar();
+    });
+  });
+}
+
+// ---- Canvas drawing ----
+function initWritingCanvas() {
+  const canvas = document.getElementById('writing-canvas');
+  if (!canvas) return;
+  _canvasReady = true;
+
+  // Make canvas responsive while keeping square proportions
+  function resizeCanvas() {
+    const wrap = canvas.parentElement;
+    const size = Math.min(wrap.clientWidth || 320, 480);
+    canvas.width = size;
+    canvas.height = size;
+    redrawCanvas();
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  // Mouse events
+  canvas.addEventListener('mousedown', e => { e.preventDefault(); startStroke(canvas, e.clientX, e.clientY); });
+  canvas.addEventListener('mousemove', e => { if (_drawing) continueStroke(canvas, e.clientX, e.clientY); });
+  canvas.addEventListener('mouseup', () => endStroke());
+  canvas.addEventListener('mouseleave', () => endStroke());
+
+  // Touch events
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); const t = e.touches[0]; startStroke(canvas, t.clientX, t.clientY); }, { passive: false });
+  canvas.addEventListener('touchmove', e => { e.preventDefault(); const t = e.touches[0]; if (_drawing) continueStroke(canvas, t.clientX, t.clientY); }, { passive: false });
+  canvas.addEventListener('touchend', () => endStroke());
+}
+
+let _drawing = false;
+
+function getPos(canvas, clientX, clientY) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  return {
+    x: (clientX - rect.left) * scaleX,
+    y: (clientY - rect.top) * scaleY,
+  };
+}
+
+function startStroke(canvas, clientX, clientY) {
+  _drawing = true;
+  const pos = getPos(canvas, clientX, clientY);
+  _currentPath = [pos];
+}
+
+function continueStroke(canvas, clientX, clientY) {
+  if (!_drawing) return;
+  const pos = getPos(canvas, clientX, clientY);
+  _currentPath.push(pos);
+  redrawCanvas();
+}
+
+function endStroke() {
+  if (!_drawing) return;
+  _drawing = false;
+  if (_currentPath.length > 1) {
+    _strokeHistory.push([..._currentPath]);
+    // Mark current character as touched
+    state.writingDone[state.writingIndex] = true;
+    renderWritingQueue();
+  }
+  _currentPath = [];
+  redrawCanvas();
+}
+
+function redrawCanvas() {
+  const canvas = document.getElementById('writing-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const size = canvas.width;
+
+  // Background
+  ctx.clearRect(0, 0, size, size);
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, size, size);
+
+  // Draw grid (米字格)
+  const showGrid = document.getElementById('writing-show-grid');
+  if (!showGrid || showGrid.checked) drawMiziGrid(ctx, size);
+
+  // Draw trace (ghost reference character)
+  const showTrace = document.getElementById('writing-show-trace');
+  if (showTrace && showTrace.checked) drawTraceChar(ctx, size);
+
+  // Draw committed strokes
+  ctx.strokeStyle = '#111827';
+  ctx.lineWidth = Math.max(2, size / 80);
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  _strokeHistory.forEach(path => drawPath(ctx, path));
+
+  // Draw current in-progress stroke
+  if (_currentPath.length > 1) {
+    ctx.strokeStyle = '#1d4ed8';
+    drawPath(ctx, _currentPath);
+  }
+}
+
+function drawPath(ctx, path) {
+  if (path.length < 2) return;
+  ctx.beginPath();
+  ctx.moveTo(path[0].x, path[0].y);
+  for (let i = 1; i < path.length - 1; i++) {
+    const mx = (path[i].x + path[i + 1].x) / 2;
+    const my = (path[i].y + path[i + 1].y) / 2;
+    ctx.quadraticCurveTo(path[i].x, path[i].y, mx, my);
+  }
+  ctx.lineTo(path[path.length - 1].x, path[path.length - 1].y);
+  ctx.stroke();
+}
+
+function drawMiziGrid(ctx, size) {
+  const mid = size / 2;
+  ctx.save();
+  ctx.strokeStyle = '#bfdbfe';  // light blue guide lines
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+
+  // Outer border
+  ctx.strokeStyle = '#93c5fd';
+  ctx.setLineDash([]);
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(1, 1, size - 2, size - 2);
+
+  // Cross lines (centre horizontal + vertical)
+  ctx.strokeStyle = '#bfdbfe';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([5, 5]);
+  ctx.beginPath(); ctx.moveTo(mid, 0); ctx.lineTo(mid, size); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0, mid); ctx.lineTo(size, mid); ctx.stroke();
+
+  // Diagonal lines
+  ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(size, size); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(size, 0); ctx.lineTo(0, size); ctx.stroke();
+
+  ctx.restore();
+}
+
+function drawTraceChar(ctx, size) {
+  const card = state.writingCards[state.writingIndex];
+  if (!card) return;
+  ctx.save();
+  ctx.font = `${size * 0.75}px "Noto Sans SC", serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = 'rgba(96, 165, 250, 0.18)';
+  ctx.fillText(card.char, size / 2, size / 2);
+  ctx.restore();
+}
+
+// ---- Controls ----
+document.getElementById('writing-clear').addEventListener('click', () => {
+  _strokeHistory = [];
+  _currentPath = [];
+  state.writingDone[state.writingIndex] = false;
+  renderWritingQueue();
+  redrawCanvas();
+});
+
+document.getElementById('writing-undo').addEventListener('click', () => {
+  if (_strokeHistory.length > 0) { _strokeHistory.pop(); redrawCanvas(); }
+  if (_strokeHistory.length === 0) {
+    state.writingDone[state.writingIndex] = false;
+    renderWritingQueue();
+  }
+});
+
+document.getElementById('writing-toggle-ref').addEventListener('click', function() {
+  const ref = document.getElementById('writing-ref-char');
+  const hidden = ref.classList.toggle('hidden');
+  this.textContent = hidden ? 'Show Reference' : 'Hide Reference';
+});
+
+document.getElementById('writing-next').addEventListener('click', () => {
+  if (state.writingIndex < state.writingCards.length - 1) {
+    state.writingIndex++; loadWritingChar();
+  }
+});
+
+document.getElementById('writing-prev').addEventListener('click', () => {
+  if (state.writingIndex > 0) {
+    state.writingIndex--; loadWritingChar();
+  }
+});
+
+document.getElementById('writing-level-tabs').addEventListener('click', e => {
+  if (e.target.classList.contains('tab')) {
+    renderWriting(parseInt(e.target.getAttribute('data-level')));
+  }
+});
+
+document.getElementById('writing-show-grid').addEventListener('change', redrawCanvas);
+document.getElementById('writing-show-trace').addEventListener('change', redrawCanvas);
 
 // =============================================
 //  INIT

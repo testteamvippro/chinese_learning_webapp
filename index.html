@@ -23,6 +23,7 @@
         <a href="#" class="nav-link" data-view="grammar">Grammar</a>
         <a href="#" class="nav-link" data-view="reading">Reading</a>
         <a href="#" class="nav-link" data-view="chengyu">成语</a>
+        <a href="#" class="nav-link" data-view="writing">Writing</a>
         <a href="#" class="nav-link" data-view="flashcards">Flashcards</a>
         <a href="#" class="nav-link" data-view="quiz">Quiz</a>
         <a href="#" class="nav-link" data-view="progress">Progress</a>
@@ -261,9 +262,64 @@
       </div>
     </section>
 
-    <!-- PROGRESS VIEW -->
-    <section id="view-progress" class="view">
+    <!-- WRITING VIEW -->
+    <section id="view-writing" class="view">
       <div class="container">
+        <div class="view-header">
+          <h2>Character Writing Practice</h2>
+          <div class="level-tabs" id="writing-level-tabs">
+            <button class="tab active" data-level="1">HSK 1</button>
+            <button class="tab" data-level="2">HSK 2</button>
+            <button class="tab" data-level="3">HSK 3</button>
+            <button class="tab" data-level="4">HSK 4</button>
+            <button class="tab" data-level="5">HSK 5</button>
+          </div>
+        </div>
+
+        <div class="writing-layout">
+          <!-- Left: reference panel -->
+          <div class="writing-ref-panel">
+            <div class="writing-ref-label">Reference</div>
+            <div class="writing-ref-char" id="writing-ref-char"></div>
+            <div class="writing-ref-pinyin" id="writing-ref-pinyin"></div>
+            <div class="writing-ref-meaning" id="writing-ref-meaning"></div>
+            <div class="writing-ref-strokes" id="writing-ref-strokes"></div>
+            <button class="btn btn-sm" id="writing-toggle-ref">Hide Reference</button>
+            <div class="writing-nav-btns">
+              <button class="btn btn-outline btn-sm" id="writing-prev">← Prev</button>
+              <span class="writing-counter" id="writing-counter">1 / 10</span>
+              <button class="btn btn-outline btn-sm" id="writing-next">Next →</button>
+            </div>
+          </div>
+
+          <!-- Right: canvas area -->
+          <div class="writing-canvas-panel">
+            <div class="writing-canvas-wrap">
+              <canvas id="writing-canvas" width="320" height="320" aria-label="Character writing canvas"></canvas>
+            </div>
+            <div class="writing-controls">
+              <button class="btn btn-outline btn-sm" id="writing-clear">🗑 Clear</button>
+              <button class="btn btn-outline btn-sm" id="writing-undo">↩ Undo</button>
+              <label class="toggle-extra">
+                <input type="checkbox" id="writing-show-grid" checked />
+                <span>Show grid</span>
+              </label>
+              <label class="toggle-extra">
+                <input type="checkbox" id="writing-show-trace" />
+                <span>Trace mode</span>
+              </label>
+            </div>
+            <div class="writing-hint">Draw the character using mouse or touch</div>
+          </div>
+        </div>
+
+        <!-- Practice queue strip -->
+        <div class="writing-queue" id="writing-queue"></div>
+      </div>
+    </section>
+
+    <!-- PROGRESS VIEW -->
+    <section id="view-progress" class="view">      <div class="container">
         <h2>Your Progress</h2>
         <div class="progress-summary" id="progress-summary"></div>
         <div class="progress-levels" id="progress-levels"></div>
