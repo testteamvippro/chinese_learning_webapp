@@ -1,0 +1,141 @@
+import { View }          from './View.js';
+import { progressStore } from '../core/ProgressStore.js';
+import { speechService } from '../core/SpeechService.js';
+import { escHtml, setActiveTab } from '../core/utils.js';
+
+export class LessonsView extends View {
+  constructor() {
+    super('lessons');
+    this._level = 1;
+    this._bindEvents();
+  }
+
+  // ---- Lifecycle ----
+
+  onActivate({ level } = {}) {
+    if (level !== undefined) this._level = level;
+    this._render(this._level);
+  }
+
+  // ---- Rendering ----
+
+  _render(level) {
+    this._level = level;
+    const data  = HSK_DATA[level] || [];   // HSK_DATA comes from data.js global
+    setActiveTab('level-tabs', level);
+    document.getElementById('lesson-info').textContent =
+      `HSK ${level} · ${data.length} vocabulary words`;
+    this._renderGrid(data, level, '');
+  }
+
+  _renderGrid(baseData, level, query) {
+    const showExtra = document.getElementById('show-extra')?.checked;
+    const allData   = showExtra && EXTRA_VOCAB[level]
+      ? [...baseData, ...EXTRA_VOCAB[level].map(w => ({ ...w, _extra: true }))]
+      : baseData;
+
+    const filtered = query
+      ? allData.filter(w =>
+          w.char.includes(query) ||
+          w.pinyin.toLowerCase().includes(query.toLowerCase()) ||
+          w.meaning.toLowerCase().includes(query.toLowerCase())
+        )
+      : allData;
+
+    const grid = document.getElementById('vocab-grid');
+
+    if (!filtered.length) {
+      grid.innerHTML =
+        '<p style="color:var(--text-muted);grid-column:1/-1">No results found.</p>';
+      return;
+    }
+
+    grid.innerHTML = filtered.map(word => {
+      const learned    = progressStore.isLearned(level, word.char);
+      const extraClass = word._extra ? ' extra-word' : '';
+      return `
+        <div class="vocab-card${learned ? ' learned' : ''}${extraClass}"
+             data-char="${escHtml(word.char)}" data-level="${level}">
+          ${learned
+            ? '<span class="learn-check">✓ learned</span>'
+            : ''}
+          ${word._extra
+            ? '<span style="font-size:.7rem;position:absolute;top:.5rem;right:.7rem;color:var(--accent)">+bonus</span>'
+            : ''}
+          <div class="vocab-char tone-${word.tone}">${escHtml(word.char)}</div>
+          <div class="vocab-pinyin">${escHtml(word.pinyin)}</div>
+          <div class="vocab-meaning">${escHtml(word.meaning)}</div>
+          <span class="vocab-tag">${escHtml(word.pos)}</span>
+          <div class="vocab-example" style="display:none"></div>
+          <button class="vocab-speak" title="Pronounce" aria-label="Pronounce">🔊</button>
+        </div>`;
+    }).join('');
+
+    this._bindCardEvents(level);
+  }
+
+  _bindCardEvents(level) {
+    const grid = document.getElementById('vocab-grid');
+    const pool = EXTRA_VOCAB[level]
+      ? [...HSK_DATA[level], ...EXTRA_VOCAB[level]]
+      : [...HSK_DATA[level]];
+
+    // Card click → mark learned + toggle example
+    grid.querySelectorAll('.vocab-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const ch   = card.getAttribute('data-char');
+        const lv   = parseInt(card.getAttribute('data-level'));
+        const word = pool.find(w => w.char === ch);
+        if (!word) return;
+
+        speechService.speak(word.char);
+        progressStore.markLearned(lv, ch);
+        card.classList.add('learned');
+        if (!card.querySelector('.learn-check')) {
+          const ck = document.createElement('span');
+          ck.className   = 'learn-check';
+          ck.textContent = '✓ learned';
+          card.prepend(ck);
+        }
+
+        const exDiv = card.querySelector('.vocab-example');
+        if (exDiv.style.display === 'none') {
+          exDiv.style.display    = 'block';
+          exDiv.style.marginTop  = '.5rem';
+          exDiv.style.fontSize   = '.8rem';
+          exDiv.style.color      = 'var(--text-muted)';
+          exDiv.innerHTML = `<span style="font-family:var(--font-cn)">${escHtml(word.example)}</span><br>${escHtml(word.exampleMeaning)}`;
+        } else {
+          exDiv.style.display = 'none';
+        }
+      });
+    });
+
+    // 🔊 button → speak only, stop event bubbling to card click
+    grid.querySelectorAll('.vocab-speak').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        speechService.speak(btn.closest('.vocab-card').getAttribute('data-char'));
+      });
+    });
+  }
+
+  // ---- Event wiring (done once in constructor) ----
+
+  _bindEvents() {
+    document.getElementById('level-tabs').addEventListener('click', e => {
+      if (e.target.classList.contains('tab')) {
+        this._render(parseInt(e.target.getAttribute('data-level')));
+      }
+    });
+
+    document.getElementById('search-input').addEventListener('input', e => {
+      this._renderGrid(HSK_DATA[this._level], this._level, e.target.value.trim());
+    });
+
+    document.getElementById('show-extra').addEventListener('change', () => {
+      const q = document.getElementById('search-input').value.trim();
+      this._renderGrid(HSK_DATA[this._level], this._level, q);
+    });
+  }
+}
