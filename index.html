@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Learn Chinese — HSK1 to HSK5</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-cn">学</span>
+        <span class="logo-text">LearnChinese</span>
+      </div>
+      <nav class="main-nav">
+        <a href="#" class="nav-link active" data-view="home">Home</a>
+        <a href="#" class="nav-link" data-view="lessons">Lessons</a>
+        <a href="#" class="nav-link" data-view="flashcards">Flashcards</a>
+        <a href="#" class="nav-link" data-view="quiz">Quiz</a>
+        <a href="#" class="nav-link" data-view="progress">Progress</a>
+      </nav>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">&#9776;</button>
+    </div>
+  </header>
+
+  <!-- ===== MAIN ===== -->
+  <main id="app">
+
+    <!-- HOME VIEW -->
+    <section id="view-home" class="view active">
+      <div class="hero">
+        <div class="hero-content">
+          <h1>Master Chinese<br/><span class="accent">From HSK 1 to HSK 5</span></h1>
+          <p class="hero-sub">Learn vocabulary, tones, and sentences step-by-step — from complete beginner to upper-intermediate.</p>
+          <button class="btn btn-primary" data-view="lessons">Start Learning</button>
+          <button class="btn btn-outline" data-view="flashcards">Practice Flashcards</button>
+        </div>
+        <div class="hero-chars">
+          <span class="big-char t1">你</span>
+          <span class="big-char t2">好</span>
+          <span class="big-char t3">中</span>
+          <span class="big-char t4">文</span>
+        </div>
+      </div>
+
+      <div class="hsk-overview container">
+        <h2>HSK Levels at a Glance</h2>
+        <div class="level-cards">
+          <div class="level-card" data-level="1">
+            <div class="level-badge l1">HSK 1</div>
+            <h3>Beginner</h3>
+            <p>150 words · Basic greetings, numbers, family, and daily objects.</p>
+            <button class="btn btn-sm" data-view="lessons" data-level="1">Study HSK 1</button>
+          </div>
+          <div class="level-card" data-level="2">
+            <div class="level-badge l2">HSK 2</div>
+            <h3>Elementary</h3>
+            <p>300 words · Shopping, transport, time, and simple conversations.</p>
+            <button class="btn btn-sm" data-view="lessons" data-level="2">Study HSK 2</button>
+          </div>
+          <div class="level-card" data-level="3">
+            <div class="level-badge l3">HSK 3</div>
+            <h3>Pre-Intermediate</h3>
+            <p>600 words · Opinions, directions, weather, and culture.</p>
+            <button class="btn btn-sm" data-view="lessons" data-level="3">Study HSK 3</button>
+          </div>
+          <div class="level-card" data-level="4">
+            <div class="level-badge l4">HSK 4</div>
+            <h3>Intermediate</h3>
+            <p>1200 words · Work, society, abstract concepts and complex sentences.</p>
+            <button class="btn btn-sm" data-view="lessons" data-level="4">Study HSK 4</button>
+          </div>
+          <div class="level-card" data-level="5">
+            <div class="level-badge l5">HSK 5</div>
+            <h3>Upper-Intermediate</h3>
+            <p>2500 words · Literature, media, professional and academic topics.</p>
+            <button class="btn btn-sm" data-view="lessons" data-level="5">Study HSK 5</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="tone-guide container">
+        <h2>The Four Tones</h2>
+        <div class="tone-cards">
+          <div class="tone-card t1"><span class="tone-mark">ā</span><div class="tone-num">Tone 1</div><div class="tone-desc">High level — flat and steady</div><div class="tone-ex">妈 mā (mother)</div></div>
+          <div class="tone-card t2"><span class="tone-mark">á</span><div class="tone-num">Tone 2</div><div class="tone-desc">Rising — like a question</div><div class="tone-ex">麻 má (hemp/numb)</div></div>
+          <div class="tone-card t3"><span class="tone-mark">ǎ</span><div class="tone-num">Tone 3</div><div class="tone-desc">Dipping — low, then up</div><div class="tone-ex">马 mǎ (horse)</div></div>
+          <div class="tone-card t4"><span class="tone-mark">à</span><div class="tone-num">Tone 4</div><div class="tone-desc">Falling — sharp and short</div><div class="tone-ex">骂 mà (to scold)</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LESSONS VIEW -->
+    <section id="view-lessons" class="view">
+      <div class="container">
+        <div class="view-header">
+          <h2>Vocabulary Lessons</h2>
+          <div class="level-tabs" id="level-tabs">
+            <button class="tab active" data-level="1">HSK 1</button>
+            <button class="tab" data-level="2">HSK 2</button>
+            <button class="tab" data-level="3">HSK 3</button>
+            <button class="tab" data-level="4">HSK 4</button>
+            <button class="tab" data-level="5">HSK 5</button>
+          </div>
+        </div>
+        <div class="lesson-info" id="lesson-info"></div>
+        <div class="search-bar">
+          <input type="text" id="search-input" placeholder="Search characters, pinyin, or meaning…" />
+        </div>
+        <div class="vocab-grid" id="vocab-grid"></div>
+      </div>
+    </section>
+
+    <!-- FLASHCARDS VIEW -->
+    <section id="view-flashcards" class="view">
+      <div class="container">
+        <div class="view-header">
+          <h2>Flashcard Practice</h2>
+          <div class="level-tabs" id="fc-level-tabs">
+            <button class="tab active" data-level="1">HSK 1</button>
+            <button class="tab" data-level="2">HSK 2</button>
+            <button class="tab" data-level="3">HSK 3</button>
+            <button class="tab" data-level="4">HSK 4</button>
+            <button class="tab" data-level="5">HSK 5</button>
+          </div>
+        </div>
+        <div class="fc-controls">
+          <span id="fc-counter">Card 1 / 10</span>
+          <button class="btn btn-sm" id="fc-shuffle">Shuffle</button>
+          <button class="btn btn-sm" id="fc-restart">Restart</button>
+        </div>
+        <div class="flashcard-area">
+          <div class="flashcard" id="flashcard" tabindex="0" aria-label="Flashcard, press space to flip">
+            <div class="flashcard-inner">
+              <div class="flashcard-front">
+                <div class="fc-char" id="fc-char"></div>
+                <div class="fc-hint">Tap to reveal</div>
+              </div>
+              <div class="flashcard-back">
+                <div class="fc-pinyin" id="fc-pinyin"></div>
+                <div class="fc-meaning" id="fc-meaning"></div>
+                <div class="fc-example" id="fc-example"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="fc-nav">
+          <button class="btn btn-outline" id="fc-prev">← Prev</button>
+          <div class="fc-rating">
+            <span class="rating-label">How well did you know it?</span>
+            <button class="btn btn-danger" id="fc-hard">Hard</button>
+            <button class="btn btn-warn" id="fc-ok">OK</button>
+            <button class="btn btn-success" id="fc-easy">Easy</button>
+          </div>
+          <button class="btn btn-outline" id="fc-next">Next →</button>
+        </div>
+        <div class="fc-progress-bar"><div id="fc-progress-fill"></div></div>
+      </div>
+    </section>
+
+    <!-- QUIZ VIEW -->
+    <section id="view-quiz" class="view">
+      <div class="container">
+        <div class="view-header">
+          <h2>Multiple Choice Quiz</h2>
+          <div class="level-tabs" id="quiz-level-tabs">
+            <button class="tab active" data-level="1">HSK 1</button>
+            <button class="tab" data-level="2">HSK 2</button>
+            <button class="tab" data-level="3">HSK 3</button>
+            <button class="tab" data-level="4">HSK 4</button>
+            <button class="tab" data-level="5">HSK 5</button>
+          </div>
+        </div>
+        <div id="quiz-start-screen">
+          <p class="quiz-intro">Test your vocabulary knowledge! 10 random questions per session.</p>
+          <button class="btn btn-primary" id="start-quiz">Start Quiz</button>
+        </div>
+        <div id="quiz-question-screen" class="hidden">
+          <div class="quiz-score-bar">
+            <span id="quiz-q-counter">Q 1 / 10</span>
+            <span id="quiz-score-display">Score: 0</span>
+          </div>
+          <div class="quiz-question-box">
+            <div class="quiz-char" id="quiz-char"></div>
+            <div class="quiz-pinyin" id="quiz-pinyin"></div>
+            <p class="quiz-instruction">What does this mean?</p>
+          </div>
+          <div class="quiz-options" id="quiz-options"></div>
+          <div class="quiz-feedback hidden" id="quiz-feedback"></div>
+        </div>
+        <div id="quiz-result-screen" class="hidden">
+          <div class="result-box">
+            <div class="result-score" id="result-score"></div>
+            <div class="result-msg" id="result-msg"></div>
+            <div class="result-review" id="result-review"></div>
+            <button class="btn btn-primary" id="retry-quiz">Try Again</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROGRESS VIEW -->
+    <section id="view-progress" class="view">
+      <div class="container">
+        <h2>Your Progress</h2>
+        <div class="progress-summary" id="progress-summary"></div>
+        <div class="progress-levels" id="progress-levels"></div>
+        <button class="btn btn-danger btn-sm" id="reset-progress" style="margin-top:2rem">Reset All Progress</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>Built for Chinese learners · HSK 1–5 · Open source on <a href="https://github.com" target="_blank" rel="noopener">GitHub</a></p>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
