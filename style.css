@@ -377,6 +377,114 @@ a:hover { text-decoration: underline; }
   text-align: center; font-size: .85rem; color: var(--text-muted);
 }
 
+/* ---------- LESSON TOOLBAR ---------- */
+.lesson-toolbar {
+  display: flex; gap: 1rem; align-items: center;
+  flex-wrap: wrap; margin-bottom: 1.2rem;
+}
+.lesson-toolbar .search-bar { flex: 1; min-width: 200px; margin-bottom: 0; }
+.toggle-extra {
+  display: flex; align-items: center; gap: .5rem;
+  font-size: .85rem; color: var(--text-muted); cursor: pointer; white-space: nowrap;
+}
+.toggle-extra input { accent-color: var(--primary); width: 16px; height: 16px; cursor: pointer; }
+.vocab-card.extra-word { border-style: dashed; }
+
+/* ---------- GRAMMAR VIEW ---------- */
+.grammar-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.6rem;
+  margin-bottom: 1.2rem;
+}
+.grammar-card-header { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1rem; }
+.grammar-pattern {
+  font-size: .85rem; font-weight: 700; color: var(--accent);
+  background: rgba(240,191,60,.12); padding: .3rem .8rem;
+  border-radius: var(--radius-sm); white-space: nowrap;
+}
+.grammar-title { font-size: 1.1rem; font-weight: 700; }
+.grammar-explanation { font-size: .92rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.7; }
+.grammar-examples { list-style: none; margin-bottom: .8rem; }
+.grammar-examples li {
+  padding: .65rem .9rem; border-left: 3px solid var(--primary);
+  background: var(--bg3); border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin-bottom: .5rem;
+}
+.grammar-examples .cn { font-family: var(--font-cn); font-size: 1rem; margin-bottom: .15rem; }
+.grammar-examples .py { font-size: .82rem; color: var(--t2); font-style: italic; margin-bottom: .1rem; }
+.grammar-examples .en { font-size: .82rem; color: var(--text-muted); }
+.grammar-tip {
+  font-size: .82rem; padding: .6rem .9rem;
+  background: rgba(79,126,248,.1); border-radius: var(--radius-sm);
+  color: var(--primary); border-left: 3px solid var(--primary);
+}
+.grammar-tip::before { content: "💡 Tip: "; font-weight: 700; }
+
+/* ---------- READING VIEW ---------- */
+.reading-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.8rem;
+  margin-bottom: 1.4rem;
+}
+.reading-card-header { display: flex; align-items: center; gap: .75rem; margin-bottom: 1.2rem; }
+.reading-title { font-size: 1.15rem; font-weight: 700; }
+.reading-body { margin-bottom: 1.2rem; }
+.reading-cn {
+  font-family: var(--font-cn); font-size: 1.05rem; line-height: 2;
+  margin-bottom: .8rem; padding: 1rem; background: var(--bg3);
+  border-radius: var(--radius-sm);
+}
+.reading-controls { display: flex; gap: .5rem; margin-bottom: .8rem; flex-wrap: wrap; }
+.reading-pinyin-text, .reading-translation-text {
+  font-size: .88rem; color: var(--text-muted); line-height: 1.8;
+  padding: .8rem; background: var(--bg3); border-radius: var(--radius-sm);
+  margin-bottom: .6rem; display: none;
+}
+.reading-pinyin-text.visible, .reading-translation-text.visible { display: block; }
+.reading-questions { margin-top: 1rem; }
+.reading-questions h4 { font-size: .9rem; color: var(--text-muted); margin-bottom: .6rem; font-weight: 600; }
+.rq-item {
+  background: var(--bg3); border-radius: var(--radius-sm);
+  padding: .7rem .9rem; margin-bottom: .5rem; font-size: .88rem;
+}
+.rq-q { font-family: var(--font-cn); margin-bottom: .2rem; }
+.rq-a { color: var(--success); display: none; margin-top: .3rem; }
+.rq-a.visible { display: block; }
+.rq-reveal { cursor: pointer; color: var(--primary); font-size: .8rem; margin-top: .3rem; display: inline-block; }
+
+/* ---------- CHENGYU VIEW ---------- */
+.cy-intro {
+  color: var(--text-muted); font-size: .95rem;
+  margin-bottom: 1.5rem; max-width: 700px;
+}
+.chengyu-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem;
+}
+.cy-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.4rem;
+  transition: border-color .15s, transform .15s;
+}
+.cy-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.cy-chars {
+  font-family: var(--font-cn); font-size: 1.9rem; font-weight: 700;
+  color: var(--accent); margin-bottom: .2rem; letter-spacing: .1em;
+}
+.cy-pinyin { font-size: .85rem; color: var(--t2); font-style: italic; margin-bottom: .6rem; }
+.cy-literal {
+  font-size: .8rem; color: var(--text-muted); margin-bottom: .4rem;
+  padding: .2rem .6rem; background: var(--bg3); border-radius: 4px;
+  display: inline-block;
+}
+.cy-meaning { font-size: .92rem; font-weight: 600; margin-bottom: .5rem; }
+.cy-origin { font-size: .8rem; color: var(--text-muted); margin-bottom: .6rem; line-height: 1.6; }
+.cy-example {
+  font-family: var(--font-cn); font-size: .88rem;
+  border-left: 2px solid var(--accent); padding-left: .6rem;
+}
+.cy-example-en { font-size: .8rem; color: var(--text-muted); margin-top: .2rem; }
+.cy-level { font-size: .72rem; font-weight: 700; margin-top: .7rem; }
+
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 700px) {
   .main-nav { display: none; flex-direction: column; position: absolute; top: 60px; left: 0; right: 0; background: var(--bg2); border-bottom: 1px solid var(--border); padding: 1rem; }

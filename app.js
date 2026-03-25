@@ -8,6 +8,8 @@ const state = {
   lessonsLevel: 1,
   fcLevel: 1,
   quizLevel: 1,
+  grammarLevel: 1,
+  readingLevel: 1,
   fcIndex: 0,
   fcCards: [],
   quizQuestions: [],
@@ -51,6 +53,9 @@ function showView(viewName) {
   if (viewName === 'flashcards') renderFlashcards(state.fcLevel);
   if (viewName === 'quiz')       resetQuizUI();
   if (viewName === 'progress')   renderProgress();
+  if (viewName === 'grammar')    renderGrammar(state.grammarLevel);
+  if (viewName === 'reading')    renderReading(state.readingLevel);
+  if (viewName === 'chengyu')    renderChengyu('');
 }
 
 // Wire up nav links
@@ -87,14 +92,18 @@ function renderLessons(level) {
 }
 
 function renderVocabGrid(data, level, query) {
+  const showExtra = document.getElementById('show-extra') && document.getElementById('show-extra').checked;
+  const allData = showExtra && EXTRA_VOCAB[level]
+    ? [...data, ...EXTRA_VOCAB[level].map(w => ({...w, _extra: true}))]
+    : data;
   const grid = document.getElementById('vocab-grid');
   const filtered = query
-    ? data.filter(w =>
+    ? allData.filter(w =>
         w.char.includes(query) ||
         w.pinyin.toLowerCase().includes(query.toLowerCase()) ||
         w.meaning.toLowerCase().includes(query.toLowerCase())
       )
-    : data;
+    : allData;
 
   if (filtered.length === 0) {
     grid.innerHTML = '<p style="color:var(--text-muted);grid-column:1/-1">No results found.</p>';
@@ -103,9 +112,11 @@ function renderVocabGrid(data, level, query) {
 
   grid.innerHTML = filtered.map(word => {
     const learned = isLearned(level, word.char);
+    const extraClass = word._extra ? ' extra-word' : '';
     return `
-      <div class="vocab-card${learned ? ' learned' : ''}" data-char="${escHtml(word.char)}" data-level="${level}">
+      <div class="vocab-card${learned ? ' learned' : ''}${extraClass}" data-char="${escHtml(word.char)}" data-level="${level}">
         ${learned ? '<span class="learn-check">✓ learned</span>' : ''}
+        ${word._extra ? '<span style="font-size:.7rem;position:absolute;top:.5rem;right:.7rem;color:var(--accent)">+bonus</span>' : ''}
         <div class="vocab-char tone-${word.tone}">${escHtml(word.char)}</div>
         <div class="vocab-pinyin">${escHtml(word.pinyin)}</div>
         <div class="vocab-meaning">${escHtml(word.meaning)}</div>
@@ -119,7 +130,8 @@ function renderVocabGrid(data, level, query) {
     card.addEventListener('click', () => {
       const ch = card.getAttribute('data-char');
       const lv = parseInt(card.getAttribute('data-level'));
-      const word = HSK_DATA[lv].find(w => w.char === ch);
+      const allWords = EXTRA_VOCAB[lv] ? [...HSK_DATA[lv], ...EXTRA_VOCAB[lv]] : [...HSK_DATA[lv]];
+      const word = allWords.find(w => w.char === ch);
       if (!word) return;
 
       // mark learned
@@ -158,6 +170,156 @@ document.getElementById('level-tabs').addEventListener('click', e => {
 document.getElementById('search-input').addEventListener('input', e => {
   const q = e.target.value.trim();
   renderVocabGrid(HSK_DATA[state.lessonsLevel], state.lessonsLevel, q);
+});
+
+// Bonus vocab toggle
+document.getElementById('show-extra').addEventListener('change', () => {
+  const q = document.getElementById('search-input').value.trim();
+  renderVocabGrid(HSK_DATA[state.lessonsLevel], state.lessonsLevel, q);
+});
+
+// =============================================
+//  GRAMMAR
+// =============================================
+function renderGrammar(level) {
+  state.grammarLevel = level;
+  setActiveTab('grammar-level-tabs', level);
+  const list = document.getElementById('grammar-list');
+  const patterns = GRAMMAR_DATA[level] || [];
+  if (!patterns.length) {
+    list.innerHTML = '<p style="color:var(--text-muted)">No grammar data for this level yet.</p>';
+    return;
+  }
+  list.innerHTML = patterns.map((g, i) => `
+    <div class="grammar-card">
+      <div class="grammar-card-header">
+        <span class="grammar-pattern">${escHtml(g.pattern)}</span>
+        <span class="grammar-title">${escHtml(g.title)}</span>
+      </div>
+      <p class="grammar-explanation">${escHtml(g.explanation)}</p>
+      <ul class="grammar-examples">
+        ${g.examples.map(ex => `
+          <li>
+            <div class="cn">${escHtml(ex.cn)}</div>
+            <div class="py">${escHtml(ex.py)}</div>
+            <div class="en">${escHtml(ex.en)}</div>
+          </li>`).join('')}
+      </ul>
+      ${g.tip ? `<div class="grammar-tip">${escHtml(g.tip)}</div>` : ''}
+    </div>`).join('');
+}
+
+document.getElementById('grammar-level-tabs').addEventListener('click', e => {
+  if (e.target.classList.contains('tab')) {
+    renderGrammar(parseInt(e.target.getAttribute('data-level')));
+  }
+});
+
+// =============================================
+//  READING
+// =============================================
+function renderReading(level) {
+  state.readingLevel = level;
+  setActiveTab('reading-level-tabs', level);
+  const list = document.getElementById('reading-list');
+  const passages = READING_DATA[level] || [];
+  if (!passages.length) {
+    list.innerHTML = '<p style="color:var(--text-muted)">No reading passages for this level yet.</p>';
+    return;
+  }
+  list.innerHTML = passages.map((p, pi) => `
+    <div class="reading-card">
+      <div class="reading-card-header">
+        <span class="level-badge l${level}">HSK ${level}</span>
+        <span class="reading-title">${escHtml(p.title)}</span>
+      </div>
+      <div class="reading-body">
+        <div class="reading-cn">${escHtml(p.text)}</div>
+        <div class="reading-controls">
+          <button class="btn btn-sm" onclick="toggleReadingPanel(this, 'py-${pi}')">Show Pinyin</button>
+          <button class="btn btn-sm" onclick="toggleReadingPanel(this, 'tr-${pi}')">Show Translation</button>
+          <button class="btn btn-sm" onclick="toggleReadingPanel(this, 'rq-${pi}')">Questions</button>
+        </div>
+        <div id="py-${pi}" class="reading-pinyin-text">${escHtml(p.pinyin)}</div>
+        <div id="tr-${pi}" class="reading-translation-text">${escHtml(p.translation)}</div>
+        <div id="rq-${pi}" class="reading-questions" style="display:none">
+          <h4>Comprehension Questions</h4>
+          ${p.questions.map((q, qi) => `
+            <div class="rq-item">
+              <div class="rq-q">${escHtml(q.q)} <span style="color:var(--text-muted);font-size:.8rem">(${escHtml(q.qEn)})</span></div>
+              <div id="rq-${pi}-${qi}" class="rq-a">${escHtml(q.a)} <span style="color:var(--text-muted);font-size:.8rem">(${escHtml(q.aEn)})</span></div>
+              <span class="rq-reveal" onclick="toggleRqA('rq-${pi}-${qi}', this)">▶ Show answer</span>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleReadingPanel(btn, id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const isQs = id.startsWith('rq-') && !id.includes('-', 3);
+  if (isQs) {
+    const visible = el.style.display !== 'none';
+    el.style.display = visible ? 'none' : 'block';
+    btn.textContent = visible ? 'Questions' : 'Hide Questions';
+  } else {
+    const visible = el.classList.contains('visible');
+    el.classList.toggle('visible', !visible);
+    btn.textContent = visible
+      ? (id.includes('py') ? 'Show Pinyin' : 'Show Translation')
+      : (id.includes('py') ? 'Hide Pinyin' : 'Hide Translation');
+  }
+}
+
+function toggleRqA(id, btn) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const visible = el.classList.toggle('visible');
+  btn.textContent = visible ? '▼ Hide answer' : '▶ Show answer';
+}
+
+document.getElementById('reading-level-tabs').addEventListener('click', e => {
+  if (e.target.classList.contains('tab')) {
+    renderReading(parseInt(e.target.getAttribute('data-level')));
+  }
+});
+
+// =============================================
+//  CHENGYU (成语)
+// =============================================
+function renderChengyu(query) {
+  const grid = document.getElementById('chengyu-grid');
+  const q = (query || '').trim().toLowerCase();
+  const data = q
+    ? CHENGYU_DATA.filter(c =>
+        c.chars.includes(q) ||
+        c.pinyin.toLowerCase().includes(q) ||
+        c.meaning.toLowerCase().includes(q) ||
+        c.literal.toLowerCase().includes(q)
+      )
+    : CHENGYU_DATA;
+
+  if (!data.length) {
+    grid.innerHTML = '<p style="color:var(--text-muted);grid-column:1/-1">No idioms found.</p>';
+    return;
+  }
+
+  grid.innerHTML = data.map(c => `
+    <div class="cy-card">
+      <div class="cy-chars">${escHtml(c.chars)}</div>
+      <div class="cy-pinyin">${escHtml(c.pinyin)}</div>
+      <div class="cy-literal">Literal: ${escHtml(c.literal)}</div>
+      <div class="cy-meaning">${escHtml(c.meaning)}</div>
+      <div class="cy-origin">${escHtml(c.origin)}</div>
+      <div class="cy-example">${escHtml(c.example)}</div>
+      <div class="cy-example-en">${escHtml(c.exampleMeaning)}</div>
+      <div class="cy-level"><span class="level-badge l${c.level}">HSK ${c.level}</span></div>
+    </div>`).join('');
+}
+
+document.getElementById('chengyu-search').addEventListener('input', e => {
+  renderChengyu(e.target.value);
 });
 
 // =============================================

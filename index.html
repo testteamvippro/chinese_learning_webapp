@@ -20,6 +20,9 @@
       <nav class="main-nav">
         <a href="#" class="nav-link active" data-view="home">Home</a>
         <a href="#" class="nav-link" data-view="lessons">Lessons</a>
+        <a href="#" class="nav-link" data-view="grammar">Grammar</a>
+        <a href="#" class="nav-link" data-view="reading">Reading</a>
+        <a href="#" class="nav-link" data-view="chengyu">成语</a>
         <a href="#" class="nav-link" data-view="flashcards">Flashcards</a>
         <a href="#" class="nav-link" data-view="quiz">Quiz</a>
         <a href="#" class="nav-link" data-view="progress">Progress</a>
@@ -109,8 +112,14 @@
           </div>
         </div>
         <div class="lesson-info" id="lesson-info"></div>
-        <div class="search-bar">
-          <input type="text" id="search-input" placeholder="Search characters, pinyin, or meaning…" />
+        <div class="lesson-toolbar">
+          <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Search characters, pinyin, or meaning…" />
+          </div>
+          <label class="toggle-extra">
+            <input type="checkbox" id="show-extra" />
+            <span>Show bonus words</span>
+          </label>
         </div>
         <div class="vocab-grid" id="vocab-grid"></div>
       </div>
@@ -201,6 +210,54 @@
             <button class="btn btn-primary" id="retry-quiz">Try Again</button>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- GRAMMAR VIEW -->
+    <section id="view-grammar" class="view">
+      <div class="container">
+        <div class="view-header">
+          <h2>Grammar Patterns</h2>
+          <div class="level-tabs" id="grammar-level-tabs">
+            <button class="tab active" data-level="1">HSK 1</button>
+            <button class="tab" data-level="2">HSK 2</button>
+            <button class="tab" data-level="3">HSK 3</button>
+            <button class="tab" data-level="4">HSK 4</button>
+            <button class="tab" data-level="5">HSK 5</button>
+          </div>
+        </div>
+        <div id="grammar-list"></div>
+      </div>
+    </section>
+
+    <!-- READING VIEW -->
+    <section id="view-reading" class="view">
+      <div class="container">
+        <div class="view-header">
+          <h2>Reading Passages</h2>
+          <div class="level-tabs" id="reading-level-tabs">
+            <button class="tab active" data-level="1">HSK 1</button>
+            <button class="tab" data-level="2">HSK 2</button>
+            <button class="tab" data-level="3">HSK 3</button>
+            <button class="tab" data-level="4">HSK 4</button>
+            <button class="tab" data-level="5">HSK 5</button>
+          </div>
+        </div>
+        <div id="reading-list"></div>
+      </div>
+    </section>
+
+    <!-- CHENGYU VIEW -->
+    <section id="view-chengyu" class="view">
+      <div class="container">
+        <div class="view-header">
+          <h2>成语 — Chinese Idioms</h2>
+          <div class="search-bar" style="flex:1;max-width:320px">
+            <input type="text" id="chengyu-search" placeholder="Search idioms…" />
+          </div>
+        </div>
+        <p class="cy-intro">Each 成语 (chéngyǔ) is a 4-character idiom with a historical story. Learning them elevates your Chinese from good to fluent.</p>
+        <div id="chengyu-grid"></div>
       </div>
     </section>
 
