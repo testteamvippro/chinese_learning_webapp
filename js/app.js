@@ -13,16 +13,17 @@
 //    c. Import and register it here — nothing else changes.
 // =============================================
 
-import { router }        from './core/Router.js';
-import { HomeView }      from './views/HomeView.js';
-import { LessonsView }   from './views/LessonsView.js';
-import { GrammarView }   from './views/GrammarView.js';
-import { ReadingView }   from './views/ReadingView.js';
-import { ChengyuView }   from './views/ChengyuView.js';
-import { WritingView }   from './views/WritingView.js';
-import { FlashcardView } from './views/FlashcardView.js';
-import { QuizView }      from './views/QuizView.js';
-import { ProgressView }  from './views/ProgressView.js';
+import { router }         from './core/Router.js';
+import { HomeView }       from './views/HomeView.js';
+import { LessonsView }    from './views/LessonsView.js';
+import { GrammarView }    from './views/GrammarView.js';
+import { ReadingView }    from './views/ReadingView.js';
+import { ChengyuView }    from './views/ChengyuView.js';
+import { WritingView }    from './views/WritingView.js';
+import { FlashcardView }  from './views/FlashcardView.js';
+import { QuizView }       from './views/QuizView.js';
+import { ProgressView }   from './views/ProgressView.js';
+import { DictionaryView } from './views/DictionaryView.js';
 
 // ---- Register all views (order mirrors nav order) ----
 router
@@ -34,6 +35,7 @@ router
   .register('writing',    new WritingView())
   .register('flashcards', new FlashcardView())
   .register('quiz',       new QuizView())
+  .register('dictionary', new DictionaryView())
   .register('progress',   new ProgressView());
 
 // ---- Global navigation (nav-links + hero/overview buttons) ----

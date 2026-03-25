@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Learn Chinese — HSK1 to HSK5</title>
+  <title>Learn Chinese — HSK1 to HSK6 + Dictionary</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
@@ -26,6 +26,7 @@
         <a href="#" class="nav-link" data-view="writing">Writing</a>
         <a href="#" class="nav-link" data-view="flashcards">Flashcards</a>
         <a href="#" class="nav-link" data-view="quiz">Quiz</a>
+        <a href="#" class="nav-link" data-view="dictionary">Dictionary</a>
         <a href="#" class="nav-link" data-view="progress">Progress</a>
       </nav>
       <button class="hamburger" id="hamburger" aria-label="Toggle menu">&#9776;</button>
@@ -39,8 +40,8 @@
     <section id="view-home" class="view active">
       <div class="hero">
         <div class="hero-content">
-          <h1>Master Chinese<br/><span class="accent">From HSK 1 to HSK 5</span></h1>
-          <p class="hero-sub">Learn vocabulary, tones, and sentences step-by-step — from complete beginner to upper-intermediate.</p>
+          <h1>Master Chinese<br/><span class="accent">From HSK 1 to HSK 6</span></h1>
+          <p class="hero-sub">Learn vocabulary, tones, and sentences step-by-step — from complete beginner to advanced. Includes a 112k-entry dictionary.</p>
           <button class="btn btn-primary" data-view="lessons">Start Learning</button>
           <button class="btn btn-outline" data-view="flashcards">Practice Flashcards</button>
         </div>
@@ -85,6 +86,12 @@
             <p>2500 words · Literature, media, professional and academic topics.</p>
             <button class="btn btn-sm" data-view="lessons" data-level="5">Study HSK 5</button>
           </div>
+          <div class="level-card" data-level="6">
+            <div class="level-badge l6">HSK 6</div>
+            <h3>Advanced</h3>
+            <p>5000+ words · Literary, classical, and native-level vocabulary.</p>
+            <button class="btn btn-sm" data-view="lessons" data-level="6">Study HSK 6</button>
+          </div>
         </div>
       </div>
 
@@ -110,6 +117,7 @@
             <button class="tab" data-level="3">HSK 3</button>
             <button class="tab" data-level="4">HSK 4</button>
             <button class="tab" data-level="5">HSK 5</button>
+            <button class="tab" data-level="6">HSK 6</button>
           </div>
         </div>
         <div class="lesson-info" id="lesson-info"></div>
@@ -137,6 +145,7 @@
             <button class="tab" data-level="3">HSK 3</button>
             <button class="tab" data-level="4">HSK 4</button>
             <button class="tab" data-level="5">HSK 5</button>
+            <button class="tab" data-level="6">HSK 6</button>
           </div>
         </div>
         <div class="fc-controls">
@@ -185,6 +194,7 @@
             <button class="tab" data-level="3">HSK 3</button>
             <button class="tab" data-level="4">HSK 4</button>
             <button class="tab" data-level="5">HSK 5</button>
+            <button class="tab" data-level="6">HSK 6</button>
           </div>
         </div>
         <div id="quiz-start-screen">
@@ -226,6 +236,7 @@
             <button class="tab" data-level="3">HSK 3</button>
             <button class="tab" data-level="4">HSK 4</button>
             <button class="tab" data-level="5">HSK 5</button>
+            <button class="tab" data-level="6">HSK 6</button>
           </div>
         </div>
         <div id="grammar-list"></div>
@@ -243,6 +254,7 @@
             <button class="tab" data-level="3">HSK 3</button>
             <button class="tab" data-level="4">HSK 4</button>
             <button class="tab" data-level="5">HSK 5</button>
+            <button class="tab" data-level="6">HSK 6</button>
           </div>
         </div>
         <div id="reading-list"></div>
@@ -274,6 +286,7 @@
             <button class="tab" data-level="3">HSK 3</button>
             <button class="tab" data-level="4">HSK 4</button>
             <button class="tab" data-level="5">HSK 5</button>
+            <button class="tab" data-level="6">HSK 6</button>
           </div>
         </div>
 
@@ -320,6 +333,21 @@
       </div>
     </section>
 
+    <!-- DICTIONARY VIEW -->
+    <section id="view-dictionary" class="view">
+      <div class="container">
+        <div class="view-header">
+          <h2>Chinese-English Dictionary</h2>
+        </div>
+        <p class="dict-intro">Powered by CC-CEDICT — search over 112,000 entries by character, pinyin, or English meaning.</p>
+        <div class="dict-status" id="dict-status" style="display:none">Loading dictionary…</div>
+        <div class="search-bar dict-search-bar">
+          <input type="text" id="dict-search" placeholder="Search characters, pinyin, or English…" disabled />
+        </div>
+        <div class="dict-results" id="dict-results"></div>
+      </div>
+    </section>
+
     <!-- PROGRESS VIEW -->
     <section id="view-progress" class="view">      <div class="container">
         <h2>Your Progress</h2>
@@ -332,10 +360,11 @@
   </main>
 
   <footer class="site-footer">
-    <p>Built for Chinese learners · HSK 1–5 · Open source on <a href="https://github.com" target="_blank" rel="noopener">GitHub</a></p>
+    <p>Built for Chinese learners · HSK 1–6 + 112k Dictionary · Open source on <a href="https://github.com" target="_blank" rel="noopener">GitHub</a></p>
   </footer>
 
   <script src="data.js"></script>
+  <script src="data_extended.js"></script>
   <script type="module" src="js/app.js"></script>
 </body>
 </html>
