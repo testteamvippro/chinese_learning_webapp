@@ -127,6 +127,7 @@ function renderVocabGrid(data, level, query) {
         <div class="vocab-meaning">${escHtml(word.meaning)}</div>
         <span class="vocab-tag">${escHtml(word.pos)}</span>
         <div class="vocab-example" style="display:none"></div>
+        <button class="vocab-speak" title="Pronounce ${escHtml(word.char)}" aria-label="Pronounce">🔊</button>
       </div>`;
   }).join('');
 
@@ -139,6 +140,7 @@ function renderVocabGrid(data, level, query) {
       const word = allWords.find(w => w.char === ch);
       if (!word) return;
 
+      speak(word.char);
       // mark learned
       markWordLearned(lv, ch);
       card.classList.add('learned');
@@ -159,6 +161,14 @@ function renderVocabGrid(data, level, query) {
       } else {
         exDiv.style.display = 'none';
       }
+    });
+  });
+
+  // Speak buttons — pronounce only, don't bubble to card click
+  grid.querySelectorAll('.vocab-speak').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      speak(btn.closest('.vocab-card').getAttribute('data-char'));
     });
   });
 }
@@ -362,9 +372,14 @@ function updateFlashcard() {
   fc.classList.remove('flipped');
 }
 
-// Flip on click / space
+// Flip on click / space — auto-speak the character when revealed
 document.getElementById('flashcard').addEventListener('click', () => {
-  document.getElementById('flashcard').classList.toggle('flipped');
+  const fc = document.getElementById('flashcard');
+  fc.classList.toggle('flipped');
+  if (fc.classList.contains('flipped')) {
+    const card = state.fcCards[state.fcIndex];
+    if (card) speak(card.char);
+  }
 });
 document.getElementById('flashcard').addEventListener('keydown', e => {
   if (e.key === ' ' || e.key === 'Enter') {
@@ -393,6 +408,12 @@ document.getElementById('fc-restart').addEventListener('click', () => {
     if (id === 'fc-easy') markWordLearned(state.fcLevel, word.char);
     if (state.fcIndex < state.fcCards.length - 1) { state.fcIndex++; updateFlashcard(); }
   });
+});
+
+document.getElementById('fc-speak').addEventListener('click', e => {
+  e.stopPropagation(); // prevent flashcard flip
+  const card = state.fcCards[state.fcIndex];
+  if (card) speak(card.char);
 });
 
 // =============================================
@@ -577,6 +598,19 @@ function escHtml(str) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+/**
+ * Pronounce text using the browser Web Speech API.
+ * Falls back silently if the API is unavailable.
+ */
+function speak(text, lang = 'zh-CN') {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel(); // stop any currently speaking utterance
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = lang;
+  utt.rate = 0.8; // slightly slower for learning clarity
+  window.speechSynthesis.speak(utt);
 }
 
 // =============================================
@@ -845,6 +879,11 @@ document.getElementById('writing-level-tabs').addEventListener('click', e => {
 
 document.getElementById('writing-show-grid').addEventListener('change', redrawCanvas);
 document.getElementById('writing-show-trace').addEventListener('change', redrawCanvas);
+
+document.getElementById('writing-speak').addEventListener('click', () => {
+  const card = state.writingCards[state.writingIndex];
+  if (card) speak(card.char);
+});
 
 // =============================================
 //  INIT

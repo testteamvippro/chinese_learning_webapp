@@ -390,6 +390,21 @@ a:hover { text-decoration: underline; }
 .toggle-extra input { accent-color: var(--primary); width: 16px; height: 16px; cursor: pointer; }
 .vocab-card.extra-word { border-style: dashed; }
 
+/* Pronunciation button on each vocab card */
+.vocab-speak {
+  position: absolute; bottom: .5rem; right: .5rem;
+  background: none; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: .2rem .45rem;
+  font-size: .75rem; cursor: pointer; color: var(--text-muted);
+  transition: color .15s, border-color .15s, background .15s;
+  line-height: 1; z-index: 1;
+}
+.vocab-speak:hover { color: var(--primary); border-color: var(--primary); background: rgba(79,126,248,.08); }
+.vocab-speak:active { transform: scale(.92); }
+
+/* Speak button on flashcard back */
+.fc-speak-btn { margin-top: .9rem; }
+
 /* ---------- GRAMMAR VIEW ---------- */
 .grammar-card {
   background: var(--card); border: 1px solid var(--border);
