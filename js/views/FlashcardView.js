@@ -34,6 +34,8 @@ export class FlashcardView extends View {
     if (!card) return;
 
     document.getElementById('fc-char').textContent    = card.char;
+    const emojiEl = document.getElementById('fc-emoji');
+    if (emojiEl) emojiEl.textContent = card.emoji || '';
     document.getElementById('fc-pinyin').textContent  = card.pinyin;
     document.getElementById('fc-meaning').textContent = card.meaning;
     document.getElementById('fc-example').innerHTML   =

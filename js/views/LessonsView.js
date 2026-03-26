@@ -62,6 +62,7 @@ export class LessonsView extends View {
           ${word._extra
             ? '<span style="font-size:.7rem;position:absolute;top:.5rem;right:.7rem;color:var(--accent)">+bonus</span>'
             : ''}
+          ${word.emoji ? `<div class="vocab-emoji">${word.emoji}</div>` : ''}
           <div class="vocab-char tone-${word.tone}">${escHtml(word.char)}</div>
           <div class="vocab-pinyin">${escHtml(word.pinyin)}</div>
           <div class="vocab-meaning">${escHtml(word.meaning)}</div>

@@ -27,7 +27,14 @@ export class QuizView extends View {
   }
 
   _start() {
-    this._questions = shuffle([...HSK_DATA[this._level]]).slice(0, 10);
+    const pool = HSK_DATA[this._level] || [];
+    if (pool.length < 4) {
+      const info = document.querySelector('#quiz-start-screen .quiz-intro');
+      if (info) info.textContent =
+        `HSK ${this._level} has only ${pool.length} word(s) loaded — need at least 4 to quiz. Try another level.`;
+      return;
+    }
+    this._questions = shuffle([...pool]).slice(0, 10);
     this._current   = 0;
     this._score     = 0;
     this._results   = [];
@@ -49,8 +56,9 @@ export class QuizView extends View {
     fb.className = 'quiz-feedback hidden';
 
     // Build 4 options: 1 correct + 3 distractors
+    const pool = HSK_DATA[this._level] || [];
     const distractors = shuffle(
-      HSK_DATA[this._level].filter(w => w.char !== q.char)
+      pool.filter(w => w.char !== q.char)
     ).slice(0, 3).map(w => w.meaning);
     const options = shuffle([q.meaning, ...distractors]);
 

@@ -231,7 +231,7 @@ export class WritingView extends View {
     // init() is idempotent — safe to call every activation
     this._pad.init(
       () => this._cards[this._index]?.char,
-      () => { this._done[this._index] = true; this._renderQueue(); }
+      () => { this._done[this._index] = true; this._renderQueue(); this._updateStrokeCount(); }
     );
   }
 
@@ -240,7 +240,8 @@ export class WritingView extends View {
   _loadLevel(level) {
     this._level = level;
     setActiveTab('writing-level-tabs', level);
-    this._cards = shuffle([...HSK_DATA[level]]).slice(0, 15);
+    const pool = HSK_DATA[level] || [];
+    this._cards = shuffle([...pool]).slice(0, 15);
     this._index = 0;
     this._done  = {};
     this._pad.clear();
@@ -268,7 +269,8 @@ export class WritingView extends View {
 
     document.getElementById('writing-ref-pinyin').textContent  = card.pinyin;
     document.getElementById('writing-ref-meaning').textContent = card.meaning;
-    document.getElementById('writing-ref-strokes').textContent = '';
+    document.getElementById('writing-ref-strokes').textContent =
+      this._pad.strokeCount > 0 ? `${this._pad.strokeCount} stroke${this._pad.strokeCount !== 1 ? 's' : ''} drawn` : '';
     document.getElementById('writing-counter').textContent     =
       `${this._index + 1} / ${this._cards.length}`;
 
@@ -296,6 +298,12 @@ export class WritingView extends View {
 
   // ---- Event wiring ----
 
+  _updateStrokeCount() {
+    const n = this._pad.strokeCount;
+    document.getElementById('writing-ref-strokes').textContent =
+      n > 0 ? `${n} stroke${n !== 1 ? 's' : ''} drawn` : '';
+  }
+
   _bindEvents() {
     document.getElementById('writing-level-tabs').addEventListener('click', e => {
       if (e.target.classList.contains('tab')) {
@@ -307,11 +315,13 @@ export class WritingView extends View {
       this._pad.clear();
       this._done[this._index] = false;
       this._renderQueue();
+      this._updateStrokeCount();
     });
 
     document.getElementById('writing-undo').addEventListener('click', () => {
       const empty = this._pad.undo();
       if (empty) { this._done[this._index] = false; this._renderQueue(); }
+      this._updateStrokeCount();
     });
 
     document.getElementById('writing-toggle-ref').addEventListener('click', function () {

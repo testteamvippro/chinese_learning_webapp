@@ -5,6 +5,7 @@ import { eventBus }      from '../core/EventBus.js';
 const LEVEL_NAMES = [
   'Beginner', 'Elementary', 'Pre-Intermediate',
   'Intermediate', 'Upper-Intermediate', 'Advanced',
+  'Academic', 'Expert', 'Master',
 ];
 
 export class ProgressView extends View {
@@ -24,7 +25,7 @@ export class ProgressView extends View {
   _render() {
     let totalWords = 0;
     Object.values(HSK_DATA).forEach(d => (totalWords += d.length));
-    const learnedWords = [1, 2, 3, 4, 5, 6].reduce(
+    const learnedWords = [1, 2, 3, 4, 5, 6, 7, 8, 9].reduce(
       (sum, lv) => sum + progressStore.getLevelCount(lv), 0
     );
 
@@ -38,11 +39,11 @@ export class ProgressView extends View {
         <div class="stat-label">Remaining</div>
       </div>
       <div class="progress-stat">
-        <div class="stat-num">${Math.round(learnedWords / totalWords * 100)}%</div>
+        <div class="stat-num">${totalWords > 0 ? Math.round(learnedWords / totalWords * 100) : 0}%</div>
         <div class="stat-label">Total Progress</div>
       </div>`;
 
-    document.getElementById('progress-levels').innerHTML = [1, 2, 3, 4, 5, 6].map(lv => {
+    document.getElementById('progress-levels').innerHTML = [1, 2, 3, 4, 5, 6, 7, 8, 9].map(lv => {
       const total = (HSK_DATA[lv] || []).length;
       const done  = progressStore.getLevelCount(lv);
       const pct   = total ? Math.round(done / total * 100) : 0;
