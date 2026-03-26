@@ -24,6 +24,7 @@ import { FlashcardView }  from './views/FlashcardView.js';
 import { QuizView }       from './views/QuizView.js';
 import { ProgressView }   from './views/ProgressView.js';
 import { DictionaryView } from './views/DictionaryView.js';
+import { ExamView }       from './views/ExamView.js';
 
 // ---- Register all views (order mirrors nav order) ----
 router
@@ -36,6 +37,7 @@ router
   .register('flashcards', new FlashcardView())
   .register('quiz',       new QuizView())
   .register('dictionary', new DictionaryView())
+  .register('exam',       new ExamView())
   .register('progress',   new ProgressView());
 
 // ---- Global navigation (nav-links + hero/overview buttons) ----

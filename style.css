@@ -746,3 +746,275 @@ a:hover { text-decoration: underline; }
   padding: .15rem .5rem; background: var(--bg2);
   border-radius: 4px;
 }
+
+/* ============================================
+   EXAM VIEW
+   ============================================ */
+
+/* -- Config card -- */
+.view-subtitle {
+  color: var(--text-muted);
+  margin: -.5rem 0 1.5rem;
+  font-size: .95rem;
+}
+.exam-config-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 2rem;
+  max-width: 600px;
+  margin: 0 auto 2rem;
+}
+.exam-config-card h3 {
+  margin: 0 0 1.5rem;
+  font-size: 1.1rem;
+  color: var(--accent);
+}
+.exam-config-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+.exam-config-row > label:first-child {
+  min-width: 80px;
+  font-weight: 600;
+  padding-top: .45rem;
+  font-size: .9rem;
+}
+.exam-select {
+  flex: 1;
+  background: var(--bg2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: .5rem .75rem;
+  font-size: .92rem;
+}
+.exam-skills-row { flex-wrap: wrap; align-items: flex-start; }
+.exam-skills-controls { flex: 1; }
+.exam-skills-toggle  { display: flex; gap: .4rem; margin-bottom: .6rem; }
+.exam-skill-checks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .35rem;
+}
+.exam-skill-label {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .87rem;
+  cursor: pointer;
+  padding: .3rem .6rem;
+  border-radius: 6px;
+  background: var(--bg2);
+  user-select: none;
+}
+.exam-skill-label:hover { background: var(--bg3); }
+
+/* -- Info cards below config -- */
+.exam-info-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: .9rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.exam-info-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.1rem .8rem;
+  text-align: center;
+}
+.eic-icon  { font-size: 1.8rem; margin-bottom: .25rem; }
+.eic-label { font-weight: 600; font-size: .88rem; margin-bottom: .2rem; }
+.eic-desc  { font-size: .75rem; color: var(--text-muted); line-height: 1.3; }
+
+/* -- Topbar (progress + score) -- */
+.exam-topbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.4rem;
+  font-size: .88rem;
+  color: var(--text-muted);
+}
+.exam-progress-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--bg3);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.exam-progress-bar > div {
+  height: 100%;
+  background: var(--accent);
+  width: 0;
+  transition: width .35s ease;
+}
+
+/* -- Question container -- */
+.exam-q-container {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 2rem;
+  max-width: 680px;
+  margin: 0 auto;
+}
+.exam-type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: .22rem .7rem;
+  border-radius: 20px;
+  font-size: .76rem;
+  font-weight: 600;
+  margin-bottom: .9rem;
+  background: rgba(79, 126, 248, .13);
+  color: var(--primary);
+  letter-spacing: .02em;
+}
+.exam-emoji         { font-size: 2.6rem; margin-bottom: .4rem; line-height: 1; }
+.exam-q-text        { font-size: 1rem; font-weight: 500; margin-bottom: .75rem; color: var(--text-muted); }
+.exam-big-cn        { font-family: 'Noto Sans SC', sans-serif; font-size: 3rem; font-weight: 700; color: var(--accent); display: block; margin-bottom: .25rem; }
+.exam-big-cn--idiom { font-size: 2.2rem; letter-spacing: .1em; }
+.exam-sub-line      { font-size: .9rem; color: var(--text-muted); margin-bottom: 1rem; }
+.exam-meaning-display {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: .5rem 0 1.2rem;
+  color: var(--text);
+}
+.exam-clue {
+  font-size: 1rem;
+  font-style: italic;
+  margin: .5rem 0 .8rem;
+  color: var(--text);
+  padding: .6rem 1rem;
+  background: var(--bg2);
+  border-radius: 8px;
+}
+.exam-example {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: .88rem;
+  color: var(--text-muted);
+  padding: .4rem .8rem;
+  background: var(--bg2);
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+/* -- Options grid -- */
+.exam-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .6rem;
+  margin-bottom: .9rem;
+}
+.exam-option {
+  background: var(--bg2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .75rem 1rem;
+  font-size: .92rem;
+  text-align: left;
+  cursor: pointer;
+  line-height: 1.35;
+  transition: background .13s, border-color .13s;
+}
+.exam-option:hover:not(.disabled) { background: var(--bg3); border-color: var(--accent); }
+.exam-option.correct  { background: rgba(34,197,94,.15);  border-color: #22c55e; color: #22c55e; font-weight: 600; }
+.exam-option.wrong    { background: rgba(239,68,68,.15);  border-color: #ef4444; color: #ef4444; }
+.exam-option.disabled { cursor: not-allowed; pointer-events: none; }
+.exam-opt-cn          { font-family: 'Noto Sans SC', sans-serif; font-size: 1.5rem; text-align: center; padding: .9rem .5rem; }
+.exam-opt-pattern     { font-family: 'Noto Sans SC', sans-serif; font-size: 1rem; }
+
+/* -- Feedback -- */
+.exam-feedback {
+  padding: .55rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: .92rem;
+}
+.exam-feedback.correct-fb { background: rgba(34,197,94,.12); color: #22c55e; }
+.exam-feedback.wrong-fb   { background: rgba(239,68,68,.12); color: #ef4444; }
+
+/* -- Results -- */
+.exam-score-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+.exam-score-circle {
+  width: 150px; height: 150px;
+  border-radius: 50%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  border: 4px solid var(--accent);
+  margin-bottom: .75rem;
+}
+.grade-a { border-color: #22c55e; background: rgba(34,197,94,.1); }
+.grade-b { border-color: #3b82f6; background: rgba(59,130,246,.1); }
+.grade-c { border-color: #f59e0b; background: rgba(245,158,11,.1); }
+.grade-d { border-color: #ef4444; background: rgba(239,68,68,.1); }
+.esc-pct  { font-size: 2.4rem; font-weight: 700; line-height: 1; }
+.esc-raw  { font-size: .85rem; color: var(--text-muted); margin-top: .15rem; }
+.exam-grade      { font-size: 1.25rem; font-weight: 700; margin-bottom: .3rem; }
+.exam-meta-badge { font-size: .8rem; color: var(--text-muted); background: var(--bg2); padding: .25rem .7rem; border-radius: 20px; }
+.exam-section-title {
+  margin: 1.5rem 0 .75rem;
+  font-size: 1rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+/* -- Skill breakdown bars -- */
+.exam-skill-row {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin-bottom: .65rem;
+}
+.esr-label  { min-width: 155px; font-size: .87rem; }
+.esr-bar-bg { flex: 1; height: 8px; background: var(--bg3); border-radius: 4px; overflow: hidden; }
+.esr-bar-fill { height: 100%; background: var(--accent); transition: width .5s ease; border-radius: 4px; }
+.esr-pct { min-width: 90px; text-align: right; font-size: .82rem; color: var(--text-muted); }
+
+/* -- Question review -- */
+.exam-review { display: flex; flex-direction: column; gap: .35rem; margin-bottom: 1.5rem; }
+.exam-review-row {
+  display: flex;
+  align-items: baseline;
+  gap: .45rem;
+  font-size: .86rem;
+  padding: .35rem .7rem;
+  border-radius: 6px;
+}
+.rr-ok   { background: rgba(34,197,94,.07); }
+.rr-fail { background: rgba(239,68,68,.07); }
+.rr-icon { font-weight: 700; min-width: 1rem; }
+.rr-num  { color: var(--text-muted); min-width: 1.8rem; }
+.rr-type { color: var(--text-muted); min-width: 120px; }
+.rr-char { font-family: 'Noto Sans SC', sans-serif; font-size: 1rem; margin-right: .2rem; }
+.rr-ans  { color: var(--text); flex: 1; }
+
+.exam-result-btns {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+/* -- Responsive -- */
+@media (max-width: 520px) {
+  .exam-option        { font-size: .82rem; padding: .65rem .6rem; }
+  .exam-options       { grid-template-columns: 1fr; }
+  .exam-skill-checks  { grid-template-columns: 1fr; }
+  .exam-big-cn        { font-size: 2.2rem; }
+  .esr-label          { min-width: 100px; }
+  .rr-type            { min-width: 80px; }
+}

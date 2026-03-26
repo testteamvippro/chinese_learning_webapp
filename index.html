@@ -27,6 +27,7 @@
         <a href="#" class="nav-link" data-view="flashcards">Flashcards</a>
         <a href="#" class="nav-link" data-view="quiz">Quiz</a>
         <a href="#" class="nav-link" data-view="dictionary">Dictionary</a>
+        <a href="#" class="nav-link" data-view="exam">Exam 📋</a>
         <a href="#" class="nav-link" data-view="progress">Progress</a>
       </nav>
       <button class="hamburger" id="hamburger" aria-label="Toggle menu">&#9776;</button>
@@ -387,6 +388,120 @@
           <input type="text" id="dict-search" placeholder="Search characters, pinyin, or English…" disabled />
         </div>
         <div class="dict-results" id="dict-results"></div>
+      </div>
+    </section>
+
+    <!-- EXAM VIEW -->
+    <section id="view-exam" class="view">
+      <div class="container">
+        <div class="view-header">
+          <h2>📋 Full Skills Exam</h2>
+          <p class="view-subtitle">Test vocabulary, tones, grammar, and more in one session</p>
+        </div>
+
+        <!-- ---- START SCREEN ---- -->
+        <div id="exam-start-screen">
+          <div class="exam-config-card">
+            <h3>Configure Your Exam</h3>
+
+            <div class="exam-config-row">
+              <label for="exam-level-select">HSK Level</label>
+              <select id="exam-level-select" class="exam-select">
+                <option value="1">HSK 1 — Beginner</option>
+                <option value="2">HSK 2 — Elementary</option>
+                <option value="3">HSK 3 — Pre-Intermediate</option>
+                <option value="4">HSK 4 — Intermediate</option>
+                <option value="5">HSK 5 — Upper-Intermediate</option>
+                <option value="6">HSK 6 — Advanced</option>
+                <option value="7">HSK 7 — Academic</option>
+                <option value="8">HSK 8 — Expert</option>
+                <option value="9">HSK 9 — Master</option>
+              </select>
+            </div>
+
+            <div class="exam-config-row">
+              <label for="exam-q-count">Questions</label>
+              <select id="exam-q-count" class="exam-select">
+                <option value="10">10 questions (~5 min)</option>
+                <option value="20" selected>20 questions (~10 min)</option>
+                <option value="30">30 questions (~15 min)</option>
+                <option value="50">50 questions (~25 min)</option>
+              </select>
+            </div>
+
+            <div class="exam-config-row exam-skills-row">
+              <label>Skills</label>
+              <div class="exam-skills-controls">
+                <div class="exam-skills-toggle">
+                  <button class="btn btn-sm btn-outline" id="exam-skills-all">All</button>
+                  <button class="btn btn-sm btn-outline" id="exam-skills-none">None</button>
+                </div>
+                <div class="exam-skill-checks">
+                  <label class="exam-skill-label"><input type="checkbox" class="exam-skill-cb" value="vocab-meaning" checked /> 📖 Vocabulary Meaning</label>
+                  <label class="exam-skill-label"><input type="checkbox" class="exam-skill-cb" value="vocab-char" checked /> 🀄 Character Recognition</label>
+                  <label class="exam-skill-label"><input type="checkbox" class="exam-skill-cb" value="vocab-pinyin" checked /> 🔤 Pinyin Reading</label>
+                  <label class="exam-skill-label"><input type="checkbox" class="exam-skill-cb" value="tone" checked /> 🎵 Tone Identification</label>
+                  <label class="exam-skill-label"><input type="checkbox" class="exam-skill-cb" value="chengyu" /> 📜 Chengyu Idioms</label>
+                  <label class="exam-skill-label"><input type="checkbox" class="exam-skill-cb" value="grammar" /> ✏️ Grammar Patterns</label>
+                </div>
+              </div>
+            </div>
+
+            <button class="btn btn-primary" id="exam-start-btn">Start Exam &nbsp;开始考试</button>
+          </div>
+
+          <div class="exam-info-row">
+            <div class="exam-info-card">
+              <div class="eic-icon">📖</div>
+              <div class="eic-label">Vocabulary</div>
+              <div class="eic-desc">Meaning, character, and pinyin recognition</div>
+            </div>
+            <div class="exam-info-card">
+              <div class="eic-icon">🎵</div>
+              <div class="eic-label">Tones</div>
+              <div class="eic-desc">Identify tone numbers from characters</div>
+            </div>
+            <div class="exam-info-card">
+              <div class="eic-icon">📜</div>
+              <div class="eic-label">Chengyu</div>
+              <div class="eic-desc">Match 4-character idioms to meanings</div>
+            </div>
+            <div class="exam-info-card">
+              <div class="eic-icon">✏️</div>
+              <div class="eic-label">Grammar</div>
+              <div class="eic-desc">Identify patterns from descriptions</div>
+            </div>
+          </div>
+        </div><!-- end exam-start-screen -->
+
+        <!-- ---- QUESTION SCREEN ---- -->
+        <div id="exam-question-screen" class="hidden">
+          <div class="exam-topbar">
+            <span id="exam-q-num">Q 1 / 20</span>
+            <div class="exam-progress-bar"><div id="exam-progress-fill"></div></div>
+            <span id="exam-score-live">Score: 0</span>
+          </div>
+          <div class="exam-q-container">
+            <div id="exam-type-badge" class="exam-type-badge"></div>
+            <div id="exam-question-body"></div>
+            <div id="exam-options" class="exam-options"></div>
+            <div id="exam-feedback" class="exam-feedback hidden"></div>
+          </div>
+        </div><!-- end exam-question-screen -->
+
+        <!-- ---- RESULT SCREEN ---- -->
+        <div id="exam-result-screen" class="hidden">
+          <div id="exam-final-score"></div>
+          <h3 class="exam-section-title">Skills Breakdown</h3>
+          <div id="exam-skill-breakdown"></div>
+          <h3 class="exam-section-title">Question Review</h3>
+          <div id="exam-review" class="exam-review"></div>
+          <div class="exam-result-btns">
+            <button class="btn btn-primary" id="exam-retry-btn">Try Again &nbsp;再试一次</button>
+            <button class="btn btn-outline" id="exam-back-btn">Change Settings</button>
+          </div>
+        </div><!-- end exam-result-screen -->
+
       </div>
     </section>
 
