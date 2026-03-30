@@ -27,6 +27,7 @@ import { DictionaryView } from './views/DictionaryView.js';
 import { ExamView }       from './views/ExamView.js';
 import { StudyPlanView }         from './views/StudyPlanView.js';
 import { SentencePatternsView }  from './views/SentencePatternsView.js';
+import { AITeacherView }         from './views/AITeacherView.js';
 
 // ---- Register all views (order mirrors nav order) ----
 router
@@ -41,6 +42,7 @@ router
   .register('flashcards', new FlashcardView())
   .register('quiz',       new QuizView())
   .register('dictionary', new DictionaryView())
+  .register('aiteacher',  new AITeacherView())
   .register('exam',       new ExamView())
   .register('progress',   new ProgressView());
 

@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Learn Chinese — HSK 1 to HSK 9 + Dictionary</title>
+  <meta name="theme-color" content="#6366f1" />
+  <meta name="description" content="Free Chinese vocabulary learning app — HSK 1 to 9, AI teacher, spaced repetition, flashcards, grammar, and more" />
+  <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
@@ -29,6 +32,7 @@
         <a href="#" class="nav-link" data-view="flashcards">Flashcards</a>
         <a href="#" class="nav-link" data-view="quiz">Quiz</a>
         <a href="#" class="nav-link" data-view="dictionary">Dictionary</a>
+        <a href="#" class="nav-link" data-view="aiteacher">AI Teacher 🤖</a>
         <a href="#" class="nav-link" data-view="exam">Exam 📋</a>
         <a href="#" class="nav-link" data-view="progress">Progress</a>
       </nav>
@@ -182,9 +186,11 @@
         </div>
         <div class="fc-controls">
           <span id="fc-counter">Card 1 / 10</span>
+          <label class="srs-toggle-label"><input type="checkbox" id="fc-srs-toggle" checked> SRS Mode</label>
           <button class="btn btn-sm" id="fc-shuffle">Shuffle</button>
           <button class="btn btn-sm" id="fc-restart">Restart</button>
         </div>
+        <div class="fc-srs-stats" id="fc-srs-stats"></div>
         <div class="flashcard-area">
           <div class="flashcard" id="flashcard" tabindex="0" aria-label="Flashcard, press space to flip">
             <div class="flashcard-inner">
@@ -197,6 +203,7 @@
                 <div class="fc-pinyin" id="fc-pinyin"></div>
                 <div class="fc-meaning" id="fc-meaning"></div>
                 <div class="fc-example" id="fc-example"></div>
+                <div class="fc-srs-info" id="fc-srs-info"></div>
                 <button class="btn btn-sm fc-speak-btn" id="fc-speak" title="Pronounce">🔊 Listen</button>
               </div>
             </div>
@@ -449,6 +456,17 @@
       </div>
     </section>
 
+    <!-- AI TEACHER VIEW -->
+    <section id="view-aiteacher" class="view">
+      <div class="container ait-container">
+        <div class="view-header">
+          <h2>🤖 AI Chinese Teacher</h2>
+          <p class="view-subtitle">Chat with your personal AI tutor — powered by Google Gemini</p>
+        </div>
+        <div id="aiteacher-root"></div>
+      </div>
+    </section>
+
     <!-- EXAM VIEW -->
     <section id="view-exam" class="view">
       <div class="container">
@@ -585,5 +603,12 @@
   <script src="data_vocab_expanded.js"></script>
   <script src="data_vocab_hsk456.js"></script>
   <script type="module" src="js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
 </body>
 </html>

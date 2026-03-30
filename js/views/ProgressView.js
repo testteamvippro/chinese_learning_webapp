@@ -11,6 +11,7 @@ const LEVEL_NAMES = [
 export class ProgressView extends View {
   constructor() {
     super('progress');
+    this._unsubs = [];
     this._bindEvents();
   }
 
@@ -18,6 +19,16 @@ export class ProgressView extends View {
 
   onActivate() {
     this._render();
+    // Subscribe to live updates while view is active
+    this._unsubs.push(
+      eventBus.on('word:learned', () => { if (this._active) this._render(); })
+    );
+  }
+
+  onDeactivate() {
+    // Clean up subscriptions to prevent memory leaks
+    this._unsubs.forEach(fn => fn());
+    this._unsubs = [];
   }
 
   // ---- Rendering ----
