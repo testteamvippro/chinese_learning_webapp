@@ -25,14 +25,18 @@ import { QuizView }       from './views/QuizView.js';
 import { ProgressView }   from './views/ProgressView.js';
 import { DictionaryView } from './views/DictionaryView.js';
 import { ExamView }       from './views/ExamView.js';
+import { StudyPlanView }         from './views/StudyPlanView.js';
+import { SentencePatternsView }  from './views/SentencePatternsView.js';
 
 // ---- Register all views (order mirrors nav order) ----
 router
   .register('home',       new HomeView())
   .register('lessons',    new LessonsView())
-  .register('grammar',    new GrammarView())
-  .register('reading',    new ReadingView())
+  .register('grammar',           new GrammarView())
+  .register('sentencepatterns',  new SentencePatternsView())
+  .register('reading',           new ReadingView())
   .register('chengyu',    new ChengyuView())
+  .register('studyplan',  new StudyPlanView())
   .register('writing',    new WritingView())
   .register('flashcards', new FlashcardView())
   .register('quiz',       new QuizView())

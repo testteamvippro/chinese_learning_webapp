@@ -186,7 +186,7 @@ class CanvasPad {
   _setupResize() {
     const resize = () => {
       const wrap = this._canvas.parentElement;
-      const size = Math.min(wrap.clientWidth || 320, 480);
+      const size = Math.min(wrap.clientWidth || 360, 600);
       this._canvas.width  = size;
       this._canvas.height = size;
       this.redraw();
@@ -245,6 +245,7 @@ export class WritingView extends View {
     this._index = 0;
     this._done  = {};
     this._pad.clear();
+    this._resetTeacher();
     this._renderQueue();
     this._updateRefPanel();
   }
@@ -252,6 +253,7 @@ export class WritingView extends View {
   _goTo(index) {
     this._index = index;
     this._pad.clear();
+    this._resetTeacher();
     this._updateRefPanel();
   }
 
@@ -316,6 +318,11 @@ export class WritingView extends View {
       this._done[this._index] = false;
       this._renderQueue();
       this._updateStrokeCount();
+      this._resetTeacher();
+    });
+
+    document.getElementById('writing-check').addEventListener('click', () => {
+      this._checkWriting();
     });
 
     document.getElementById('writing-undo').addEventListener('click', () => {
@@ -346,5 +353,115 @@ export class WritingView extends View {
       () => this._pad.redraw());
     document.getElementById('writing-show-trace').addEventListener('change',
       () => this._pad.redraw());
+  }
+
+  // ---- Virtual Teacher ----
+
+  _resetTeacher() {
+    const msgEl  = document.getElementById('teacher-message');
+    const scoreW = document.getElementById('teacher-score-wrap');
+    const panel  = document.getElementById('writing-teacher');
+    if (msgEl)  msgEl.innerHTML = 'Draw the character above, then tap <strong>Check Writing</strong> to receive feedback.';
+    if (scoreW) scoreW.classList.add('hidden');
+    if (panel)  panel.className = 'writing-teacher';
+  }
+
+  _checkWriting() {
+    const canvas = this._pad._canvas;
+    if (!canvas) return;
+    if (this._pad.strokeCount === 0) {
+      this._showTeacherFeedback(-1);
+      return;
+    }
+    const card = this._cards[this._index];
+    if (!card) return;
+    const size = canvas.width;
+
+    // Render reference character to an offscreen canvas
+    const ref  = document.createElement('canvas');
+    ref.width  = size;
+    ref.height = size;
+    const rctx = ref.getContext('2d');
+    rctx.fillStyle = '#ffffff';
+    rctx.fillRect(0, 0, size, size);
+    rctx.font         = `${Math.round(size * 0.72)}px "Noto Sans SC", serif`;
+    rctx.textAlign    = 'center';
+    rctx.textBaseline = 'middle';
+    rctx.fillStyle    = '#000000';
+    rctx.fillText(card.char, size / 2, size / 2 + size * 0.03);
+
+    const userCtx  = canvas.getContext('2d');
+    const userData = userCtx.getImageData(0, 0, size, size).data;
+    const refData  = rctx.getImageData(0, 0, size, size).data;
+
+    // 8×8 grid coverage: check how many reference cells the user covered
+    const CELLS   = 8;
+    const cellPx  = Math.floor(size / CELLS);
+    const minRef  = cellPx * cellPx * 0.04;   // ≥4% of cell must be dark = has reference ink
+    const minUser = cellPx * cellPx * 0.008;  // ≥0.8% = user drew something here
+    let refCells = 0, matchCells = 0;
+
+    for (let row = 0; row < CELLS; row++) {
+      for (let col = 0; col < CELLS; col++) {
+        let rInk = 0, uInk = 0;
+        for (let py = row * cellPx; py < (row + 1) * cellPx; py++) {
+          for (let px = col * cellPx; px < (col + 1) * cellPx; px++) {
+            const i = (py * size + px) * 4;
+            if (refData[i]  < 128) rInk++;
+            if (userData[i] < 128) uInk++;
+          }
+        }
+        if (rInk > minRef) {
+          refCells++;
+          if (uInk > minUser) matchCells++;
+        }
+      }
+    }
+
+    const score = refCells > 0 ? Math.round(matchCells / refCells * 100) : 0;
+    this._showTeacherFeedback(score);
+  }
+
+  _showTeacherFeedback(score) {
+    const msgEl  = document.getElementById('teacher-message');
+    const scoreW = document.getElementById('teacher-score-wrap');
+    const barEl  = document.getElementById('teacher-score-bar');
+    const pctEl  = document.getElementById('teacher-score-pct');
+    const panel  = document.getElementById('writing-teacher');
+
+    if (score === -1) {
+      msgEl.innerHTML = 'Please draw the character on the canvas first, then I can check your work!';
+      scoreW.classList.add('hidden');
+      panel.className = 'writing-teacher';
+      return;
+    }
+
+    scoreW.classList.remove('hidden');
+    pctEl.textContent = `${score}%`;
+    requestAnimationFrame(() => { barEl.style.width = `${score}%`; });
+
+    let msg, cls, barColor;
+    if (score >= 80) {
+      msg      = '🌟 <strong>Excellent!</strong> Your strokes cover the character very well. Outstanding work!';
+      cls      = 'writing-teacher teacher-excellent';
+      barColor = 'var(--success)';
+    } else if (score >= 60) {
+      msg      = '👍 <strong>Good job!</strong> Most of the character is well covered. A little more practice and you&#39;ll master it!';
+      cls      = 'writing-teacher teacher-good';
+      barColor = 'var(--warn)';
+    } else if (score >= 35) {
+      msg      = '✏️ <strong>Keep going!</strong> Several areas of the character are still missing. Try enabling <em>Trace mode</em> to see the ghost guide and trace over it.';
+      cls      = 'writing-teacher teacher-fair';
+      barColor = 'var(--warn)';
+    } else {
+      msg      = '📚 <strong>Needs more practice.</strong> Enable <em>Trace mode</em> to see the character guide, then carefully trace over each stroke.';
+      cls      = 'writing-teacher teacher-poor';
+      barColor = 'var(--danger)';
+    }
+
+    barEl.style.background = barColor;
+    msgEl.innerHTML        = msg;
+    panel.className        = cls;
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 }
