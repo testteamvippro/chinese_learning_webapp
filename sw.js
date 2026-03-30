@@ -4,7 +4,7 @@
 //  serves from cache first with network fallback.
 // =============================================
 
-const CACHE_NAME = 'learnchinese-v1';
+const CACHE_NAME = 'learnchinese-v2';
 
 const APP_SHELL = [
   './',

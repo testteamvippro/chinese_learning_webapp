@@ -939,6 +939,60 @@ a:hover { text-decoration: underline; }
 }
 
 /* ============================================
+   Daily Learning Tip
+   ============================================ */
+.daily-tip { padding: 0 1rem; margin-bottom: 1.5rem; }
+
+.daily-tip-card {
+  max-width: 680px;
+  margin: 0 auto;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+}
+
+.daily-tip-header {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-bottom: .6rem;
+}
+.daily-tip-icon { font-size: 1.3rem; }
+.daily-tip-header h3 {
+  margin: 0;
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.daily-tip-text {
+  font-size: .92rem;
+  line-height: 1.65;
+  color: var(--text);
+  margin: 0 0 .8rem;
+}
+
+.daily-tip-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.daily-tip-category {
+  font-size: .75rem;
+  padding: .2rem .55rem;
+  border-radius: 10px;
+  background: rgba(99,102,241,.15);
+  color: var(--primary);
+  font-weight: 500;
+}
+
+@media (max-width: 600px) {
+  .daily-tip-card { padding: 1rem; }
+}
+
+/* ============================================
    HSK 7-9 progress rows
    ============================================ */
 .plr-l7 .plr-bar-fill { background: #a855f7; }
