@@ -34,8 +34,20 @@
         <a href="#" class="nav-link" data-view="dictionary">Dictionary</a>
         <a href="#" class="nav-link" data-view="aiteacher">AI Teacher 🤖</a>
         <a href="#" class="nav-link" data-view="exam">Exam 📋</a>
+        <a href="#" class="nav-link" data-view="listening">Listening 👂</a>
+        <a href="#" class="nav-link" data-view="tonetrainer">Tones 🎵</a>
+        <a href="#" class="nav-link" data-view="radicals">Radicals 部</a>
+        <a href="#" class="nav-link" data-view="placement">Level Test 🎯</a>
         <a href="#" class="nav-link" data-view="progress">Progress</a>
       </nav>
+      <div class="streak-badge" id="streak-badge" title="Daily streak">
+        <span class="streak-fire">🔥</span>
+        <span class="streak-count" id="streak-count">0</span>
+      </div>
+      <div class="xp-badge" id="xp-badge" title="Experience points">
+        <span class="xp-star">⭐</span>
+        <span class="xp-count" id="xp-count">0</span>
+      </div>
       <button class="hamburger" id="hamburger" aria-label="Toggle menu">&#9776;</button>
     </div>
   </header>
@@ -79,6 +91,9 @@
           </div>
         </div>
       </div>
+
+      <!-- Gamification Stats -->
+      <div class="container" id="gam-home" style="margin-top:1.5rem"></div>
 
       <div class="hsk-overview container">
         <h2>HSK Levels at a Glance</h2>
@@ -593,6 +608,132 @@
           </div>
         </div><!-- end exam-result-screen -->
 
+      </div>
+    </section>
+
+    <!-- LISTENING VIEW -->
+    <section id="view-listening" class="view">
+      <div class="container">
+        <div class="view-header">
+          <h2>👂 Listening Practice</h2>
+          <p class="view-subtitle">Train your ears — listen to Chinese words and identify them</p>
+          <div class="level-tabs" id="listening-level-tabs">
+            <button class="tab active" data-level="1">HSK 1</button>
+            <button class="tab" data-level="2">HSK 2</button>
+            <button class="tab" data-level="3">HSK 3</button>
+            <button class="tab" data-level="4">HSK 4</button>
+            <button class="tab" data-level="5">HSK 5</button>
+            <button class="tab" data-level="6">HSK 6</button>
+            <button class="tab tab-adv" data-level="7">HSK 7</button>
+            <button class="tab tab-adv" data-level="8">HSK 8</button>
+            <button class="tab tab-adv" data-level="9">HSK 9</button>
+          </div>
+        </div>
+
+        <!-- Start Screen -->
+        <div id="listening-start">
+          <div class="listening-intro-card">
+            <div class="listening-icon">🎧</div>
+            <h3>How it works</h3>
+            <p>You'll hear a Chinese word spoken aloud. Choose the correct meaning from 4 options. Train your listening comprehension one word at a time!</p>
+            <button class="btn btn-primary" id="listening-start-btn">Start Listening Quiz</button>
+          </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="listening-quiz" class="hidden">
+          <div class="listening-topbar">
+            <span id="listening-counter">Q 1 / 10</span>
+            <div class="listening-progress-bar"><div id="listening-progress-fill"></div></div>
+            <span id="listening-score">Score: 0</span>
+          </div>
+          <div class="listening-question">
+            <div class="listening-char-display" id="listening-char-display">🔊</div>
+            <div class="listening-hint" id="listening-hint">Listen carefully, then choose the correct answer</div>
+            <button class="btn btn-sm btn-outline" id="listening-replay">🔊 Replay</button>
+          </div>
+          <div class="quiz-options" id="listening-options"></div>
+          <div class="listening-feedback hidden" id="listening-feedback"></div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="listening-result" class="hidden"></div>
+      </div>
+    </section>
+
+    <!-- TONE TRAINER VIEW -->
+    <section id="view-tonetrainer" class="view">
+      <div class="container">
+        <div class="view-header">
+          <h2>🎵 Tone Trainer</h2>
+          <p class="view-subtitle">Master the four tones — the foundation of Mandarin pronunciation</p>
+          <div class="level-tabs" id="tone-level-tabs">
+            <button class="tab active" data-level="1">HSK 1</button>
+            <button class="tab" data-level="2">HSK 2</button>
+            <button class="tab" data-level="3">HSK 3</button>
+            <button class="tab" data-level="4">HSK 4</button>
+            <button class="tab" data-level="5">HSK 5</button>
+            <button class="tab" data-level="6">HSK 6</button>
+            <button class="tab tab-adv" data-level="7">HSK 7</button>
+            <button class="tab tab-adv" data-level="8">HSK 8</button>
+            <button class="tab tab-adv" data-level="9">HSK 9</button>
+          </div>
+        </div>
+
+        <!-- Start Screen -->
+        <div id="tone-start-screen">
+          <div class="tone-intro">
+            <div class="tone-ref-cards">
+              <div class="tone-ref t1"><span class="tone-ref-mark">ā</span><span>Tone 1 — High level</span></div>
+              <div class="tone-ref t2"><span class="tone-ref-mark">á</span><span>Tone 2 — Rising</span></div>
+              <div class="tone-ref t3"><span class="tone-ref-mark">ǎ</span><span>Tone 3 — Dipping</span></div>
+              <div class="tone-ref t4"><span class="tone-ref-mark">à</span><span>Tone 4 — Falling</span></div>
+            </div>
+            <div id="tone-mode-selector" class="tone-mode-selector">
+              <button class="tone-mode-btn active" data-mode="identify">🀄 Identify Tone</button>
+              <button class="tone-mode-btn" data-mode="pinyin">🔤 Pick Pinyin</button>
+              <button class="tone-mode-btn" data-mode="listen">👂 Listen & Choose</button>
+            </div>
+            <button class="btn btn-primary" id="tone-start-btn">Start Training</button>
+          </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="tone-quiz-screen" class="hidden">
+          <div class="tone-topbar">
+            <span id="tone-q-counter">Q 1 / 10</span>
+            <div class="tone-progress-bar"><div id="tone-progress-fill"></div></div>
+            <span id="tone-q-score">Score: 0</span>
+          </div>
+          <div id="tone-question-body"></div>
+          <div class="tone-options" id="tone-options"></div>
+          <div class="tone-feedback hidden" id="tone-feedback"></div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="tone-result-screen" class="hidden"></div>
+      </div>
+    </section>
+
+    <!-- RADICALS / CHARACTER DECOMPOSITION VIEW -->
+    <section id="view-radicals" class="view">
+      <div class="container">
+        <div class="view-header">
+          <h2>部首 — Radicals & Character Breakdown</h2>
+          <p class="view-subtitle">Explore the building blocks of Chinese characters — 214 Kangxi radicals and how characters are composed</p>
+        </div>
+        <div id="radicals-root"></div>
+      </div>
+    </section>
+
+    <!-- PLACEMENT TEST VIEW -->
+    <section id="view-placement" class="view">
+      <div class="container">
+        <div class="view-header">
+          <h2>🎯 HSK Level Placement Test</h2>
+          <p class="view-subtitle">Find out which HSK level is right for you</p>
+        </div>
+        <div id="placement-root"></div>
       </div>
     </section>
 

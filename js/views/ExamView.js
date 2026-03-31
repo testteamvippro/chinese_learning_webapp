@@ -8,6 +8,7 @@
 import { View }           from './View.js';
 import { speechService }  from '../core/SpeechService.js';
 import { escHtml, shuffle } from '../core/utils.js';
+import { gamificationStore } from '../core/GamificationStore.js';
 
 const TYPE_LABELS = {
   'vocab-meaning': '📖 Meaning',
@@ -163,10 +164,10 @@ export class ExamView extends View {
   _qChengyu(cy, n) {
     if (cy.length < 4) return [];
     return shuffle(cy).slice(0, n).map(c => {
-      const dist = shuffle(cy.filter(x => x.char !== c.char)).slice(0, 3).map(x => x.meaning);
+      const dist = shuffle(cy.filter(x => x.chars !== c.chars)).slice(0, 3).map(x => x.meaning);
       return {
         type: 'chengyu',
-        char: c.char, pinyin: c.pinyin || '',
+        char: c.chars, pinyin: c.pinyin || '',
         correct: c.meaning,
         options: shuffle([c.meaning, ...dist]),
       };
@@ -289,6 +290,7 @@ export class ExamView extends View {
 
     // Auto-advance
     setTimeout(() => {
+      if (!this._active) return;
       this._current++;
       if (this._current < this._questions.length) {
         this._showQuestion();
@@ -312,6 +314,7 @@ export class ExamView extends View {
     const pct   = total > 0 ? Math.round(score / total * 100) : 0;
 
     let grade, gClass;
+    gamificationStore.recordExamComplete();
     if      (pct >= 90) { grade = 'A+  满分！Excellent!';    gClass = 'grade-a'; }
     else if (pct >= 80) { grade = 'A  优秀 Great job!';      gClass = 'grade-a'; }
     else if (pct >= 70) { grade = 'B  良好 Good work!';      gClass = 'grade-b'; }

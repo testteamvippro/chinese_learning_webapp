@@ -1,6 +1,7 @@
 import { View }          from './View.js';
 import { speechService } from '../core/SpeechService.js';
 import { escHtml, shuffle, setActiveTab } from '../core/utils.js';
+import { gamificationStore } from '../core/GamificationStore.js';
 
 // =============================================
 //  CANVAS PAD  — encapsulates all drawing logic
@@ -18,6 +19,7 @@ class CanvasPad {
     this._live      = [];   // current in-progress stroke
     this._drawing   = false;
     this._ready     = false;
+    this._resizeHandler = null;
 
     // Callbacks injected by WritingView
     this._getChar     = null;  // () => string — current character to trace
@@ -184,15 +186,22 @@ class CanvasPad {
   }
 
   _setupResize() {
-    const resize = () => {
+    this._resizeHandler = () => {
       const wrap = this._canvas.parentElement;
       const size = Math.min(wrap.clientWidth || 360, 600);
       this._canvas.width  = size;
       this._canvas.height = size;
       this.redraw();
     };
-    resize();
-    window.addEventListener('resize', resize);
+    this._resizeHandler();
+    window.addEventListener('resize', this._resizeHandler);
+  }
+
+  destroy() {
+    if (this._resizeHandler) {
+      window.removeEventListener('resize', this._resizeHandler);
+      this._resizeHandler = null;
+    }
   }
 
   _bindEvents() {
@@ -233,6 +242,10 @@ export class WritingView extends View {
       () => this._cards[this._index]?.char,
       () => { this._done[this._index] = true; this._renderQueue(); this._updateStrokeCount(); }
     );
+  }
+
+  onDeactivate() {
+    // CanvasPad resize handler is kept alive since the pad is reused
   }
 
   // ---- Load / navigate ----
@@ -291,11 +304,13 @@ export class WritingView extends View {
                    data-wi="${i}">${escHtml(c.char)}</div>`;
     }).join('');
 
-    queue.querySelectorAll('.wq-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        this._goTo(parseInt(chip.getAttribute('data-wi')));
+    if (!queue.dataset.bound) {
+      queue.dataset.bound = '1';
+      queue.addEventListener('click', e => {
+        const chip = e.target.closest('.wq-chip');
+        if (chip) this._goTo(parseInt(chip.getAttribute('data-wi')));
       });
-    });
+    }
   }
 
   // ---- Event wiring ----
@@ -420,6 +435,7 @@ export class WritingView extends View {
 
     const score = refCells > 0 ? Math.round(matchCells / refCells * 100) : 0;
     this._showTeacherFeedback(score);
+    if (score > 0) gamificationStore.recordWritingPractice();
   }
 
   _showTeacherFeedback(score) {

@@ -20,6 +20,10 @@ export class DictionaryView extends View {
     }
   }
 
+  onDeactivate() {
+    clearTimeout(this._debounce);
+  }
+
   // ---- Events ----
 
   _bindEvents() {

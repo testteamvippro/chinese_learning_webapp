@@ -71,54 +71,13 @@ export class LessonsView extends View {
           <button class="vocab-speak" title="Pronounce" aria-label="Pronounce">🔊</button>
         </div>`;
     }).join('');
-
-    this._bindCardEvents(level);
   }
 
-  _bindCardEvents(level) {
-    const grid = document.getElementById('vocab-grid');
+  _getWordFromPool(level, char) {
     const pool = EXTRA_VOCAB[level]
-      ? [...HSK_DATA[level], ...EXTRA_VOCAB[level]]
-      : [...HSK_DATA[level]];
-
-    // Card click → mark learned + toggle example
-    grid.querySelectorAll('.vocab-card').forEach(card => {
-      card.addEventListener('click', () => {
-        const ch   = card.getAttribute('data-char');
-        const lv   = parseInt(card.getAttribute('data-level'));
-        const word = pool.find(w => w.char === ch);
-        if (!word) return;
-
-        speechService.speak(word.char);
-        progressStore.markLearned(lv, ch);
-        card.classList.add('learned');
-        if (!card.querySelector('.learn-check')) {
-          const ck = document.createElement('span');
-          ck.className   = 'learn-check';
-          ck.textContent = '✓ learned';
-          card.prepend(ck);
-        }
-
-        const exDiv = card.querySelector('.vocab-example');
-        if (exDiv.style.display === 'none') {
-          exDiv.style.display    = 'block';
-          exDiv.style.marginTop  = '.5rem';
-          exDiv.style.fontSize   = '.8rem';
-          exDiv.style.color      = 'var(--text-muted)';
-          exDiv.innerHTML = `<span style="font-family:var(--font-cn)">${escHtml(word.example)}</span><br>${escHtml(word.exampleMeaning)}`;
-        } else {
-          exDiv.style.display = 'none';
-        }
-      });
-    });
-
-    // 🔊 button → speak only, stop event bubbling to card click
-    grid.querySelectorAll('.vocab-speak').forEach(btn => {
-      btn.addEventListener('click', e => {
-        e.stopPropagation();
-        speechService.speak(btn.closest('.vocab-card').getAttribute('data-char'));
-      });
-    });
+      ? [...(HSK_DATA[level] || []), ...EXTRA_VOCAB[level]]
+      : [...(HSK_DATA[level] || [])];
+    return pool.find(w => w.char === char);
   }
 
   // ---- Event wiring (done once in constructor) ----
@@ -137,6 +96,48 @@ export class LessonsView extends View {
     document.getElementById('show-extra').addEventListener('change', () => {
       const q = document.getElementById('search-input').value.trim();
       this._renderGrid(HSK_DATA[this._level], this._level, q);
+    });
+
+    // Event delegation on the grid — handles card clicks and speak buttons
+    const grid = document.getElementById('vocab-grid');
+    grid.addEventListener('click', e => {
+      // Speak button
+      const speakBtn = e.target.closest('.vocab-speak');
+      if (speakBtn) {
+        e.stopPropagation();
+        speechService.speak(speakBtn.closest('.vocab-card').getAttribute('data-char'));
+        return;
+      }
+
+      // Card click → mark learned + toggle example
+      const card = e.target.closest('.vocab-card');
+      if (!card) return;
+
+      const ch   = card.getAttribute('data-char');
+      const lv   = parseInt(card.getAttribute('data-level'));
+      const word = this._getWordFromPool(lv, ch);
+      if (!word) return;
+
+      speechService.speak(word.char);
+      progressStore.markLearned(lv, ch);
+      card.classList.add('learned');
+      if (!card.querySelector('.learn-check')) {
+        const ck = document.createElement('span');
+        ck.className   = 'learn-check';
+        ck.textContent = '✓ learned';
+        card.prepend(ck);
+      }
+
+      const exDiv = card.querySelector('.vocab-example');
+      if (exDiv.style.display === 'none') {
+        exDiv.style.display    = 'block';
+        exDiv.style.marginTop  = '.5rem';
+        exDiv.style.fontSize   = '.8rem';
+        exDiv.style.color      = 'var(--text-muted)';
+        exDiv.innerHTML = `<span style="font-family:var(--font-cn)">${escHtml(word.example)}</span><br>${escHtml(word.exampleMeaning)}`;
+      } else {
+        exDiv.style.display = 'none';
+      }
     });
   }
 }

@@ -1,5 +1,6 @@
 import { View }  from './View.js';
 import { escHtml, shuffle, setActiveTab } from '../core/utils.js';
+import { gamificationStore } from '../core/GamificationStore.js';
 
 export class QuizView extends View {
   constructor() {
@@ -95,6 +96,7 @@ export class QuizView extends View {
     this._results.push({ q: this._questions[this._current], correct: isCorrect });
 
     setTimeout(() => {
+      if (!this._active) return;
       this._current++;
       if (this._current < this._questions.length) {
         this._showQuestion();
@@ -110,6 +112,8 @@ export class QuizView extends View {
 
     const total = this._questions.length;
     document.getElementById('result-score').textContent = `${this._score} / ${total}`;
+
+    gamificationStore.recordQuizComplete(this._score, total);
 
     const msgs = [
       'Keep studying! 加油！', 'Getting there! 继续！',

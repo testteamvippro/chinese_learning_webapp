@@ -43,13 +43,17 @@ export class AITeacherView extends View {
     this._messages  = [];   // {role:'user'|'model', text:string}
     this._loading   = false;
     this._apiKey    = localStorage.getItem(STORAGE_KEY) || '';
+    this._bound     = false;
   }
 
   /* ---- lifecycle ---- */
   onActivate() {
     this._loadHistory();
     this._render();
-    this._bindEvents();
+    if (!this._bound) {
+      this._bindEvents();
+      this._bound = true;
+    }
     this._scrollToBottom();
   }
 
@@ -153,51 +157,66 @@ export class AITeacherView extends View {
 
   /* ---- events ---- */
   _bindEvents() {
-    const send   = () => { const v = document.getElementById('ait-input')?.value?.trim(); if (v) this._send(v); };
+    const root = document.getElementById('aiteacher-root');
+    if (!root) return;
 
-    document.getElementById('ait-send')?.addEventListener('click', send);
-    document.getElementById('ait-input')?.addEventListener('keydown', e => {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+    // Use delegation on the stable root element
+    root.addEventListener('click', e => {
+      // Send button
+      if (e.target.closest('#ait-send')) {
+        const v = document.getElementById('ait-input')?.value?.trim();
+        if (v) this._send(v);
+        return;
+      }
+
+      // API key save
+      if (e.target.closest('#ait-key-save')) {
+        const key = document.getElementById('ait-key-input')?.value?.trim();
+        if (!key) return;
+        this._apiKey = key;
+        localStorage.setItem(STORAGE_KEY, key);
+        this._render();
+        return;
+      }
+
+      // API key change
+      if (e.target.closest('#ait-key-clear')) {
+        this._apiKey = '';
+        localStorage.removeItem(STORAGE_KEY);
+        this._render();
+        return;
+      }
+
+      // Clear chat
+      if (e.target.closest('#ait-clear-chat')) {
+        this._messages = [];
+        localStorage.removeItem(HISTORY_KEY);
+        this._render();
+        return;
+      }
+
+      // Quick prompt buttons
+      const quickBtn = e.target.closest('.ait-quick-btn');
+      if (quickBtn?.dataset.prompt) {
+        this._send(quickBtn.dataset.prompt);
+        return;
+      }
+    });
+
+    root.addEventListener('keydown', e => {
+      if (e.target.id === 'ait-input' && e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        const v = e.target.value?.trim();
+        if (v) this._send(v);
+      }
     });
 
     // auto-resize textarea
-    document.getElementById('ait-input')?.addEventListener('input', e => {
-      e.target.style.height = 'auto';
-      e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
-    });
-
-    // API key save
-    document.getElementById('ait-key-save')?.addEventListener('click', () => {
-      const key = document.getElementById('ait-key-input')?.value?.trim();
-      if (!key) return;
-      this._apiKey = key;
-      localStorage.setItem(STORAGE_KEY, key);
-      this._render();
-      this._bindEvents();
-    });
-
-    // API key change
-    document.getElementById('ait-key-clear')?.addEventListener('click', () => {
-      this._apiKey = '';
-      localStorage.removeItem(STORAGE_KEY);
-      this._render();
-      this._bindEvents();
-    });
-
-    // Clear chat
-    document.getElementById('ait-clear-chat')?.addEventListener('click', () => {
-      this._messages = [];
-      localStorage.removeItem(HISTORY_KEY);
-      this._render();
-      this._bindEvents();
-    });
-
-    // Quick prompt buttons
-    document.querySelectorAll('.ait-quick-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const prompt = btn.dataset.prompt;
-        if (prompt) this._send(prompt);
-      });
+    root.addEventListener('input', e => {
+      if (e.target.id === 'ait-input') {
+        e.target.style.height = 'auto';
+        e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+      }
     });
   }
 
@@ -208,7 +227,6 @@ export class AITeacherView extends View {
     this._messages.push({ role: 'user', text });
     this._loading = true;
     this._render();
-    this._bindEvents();
     this._scrollToBottom();
 
     try {
@@ -235,7 +253,6 @@ export class AITeacherView extends View {
     } finally {
       this._loading = false;
       this._render();
-      this._bindEvents();
       this._scrollToBottom();
     }
   }

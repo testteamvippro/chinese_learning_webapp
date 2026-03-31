@@ -4,7 +4,7 @@
 //  serves from cache first with network fallback.
 // =============================================
 
-const CACHE_NAME = 'learnchinese-v2';
+const CACHE_NAME = 'learnchinese-v5';
 
 const APP_SHELL = [
   './',
@@ -23,6 +23,8 @@ const APP_SHELL = [
   './js/core/ProgressStore.js',
   './js/core/SpeechService.js',
   './js/core/DictionaryDB.js',
+  './js/core/ChineseDB.js',
+  './js/core/DataService.js',
   './js/core/SRSEngine.js',
   './js/core/utils.js',
   './js/views/View.js',
@@ -40,6 +42,11 @@ const APP_SHELL = [
   './js/views/StudyPlanView.js',
   './js/views/SentencePatternsView.js',
   './js/views/AITeacherView.js',
+  './js/core/GamificationStore.js',
+  './js/views/ListeningView.js',
+  './js/views/ToneTrainerView.js',
+  './js/views/RadicalView.js',
+  './js/views/PlacementTestView.js',
 ];
 
 // ---- Install: pre-cache app shell ----
@@ -47,6 +54,10 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(APP_SHELL))
+      .catch(err => {
+        console.warn('[SW] Failed to cache app shell:', err);
+        // Non-fatal: the app can still work online without full cache
+      })
       .then(() => self.skipWaiting())
   );
 });

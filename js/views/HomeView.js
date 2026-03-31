@@ -1,4 +1,5 @@
 import { View } from './View.js';
+import { gamificationStore } from '../core/GamificationStore.js';
 
 const TIPS = [
   // ── Pronunciation & Tones ──
@@ -71,6 +72,7 @@ export class HomeView extends View {
 
   onActivate() {
     this._renderTip();
+    this._renderGamification();
     const nextBtn = document.getElementById('daily-tip-next');
     if (nextBtn) {
       this._onNext = () => { this._tipIndex = (this._tipIndex + 1) % TIPS.length; this._renderTip(); };
@@ -96,5 +98,48 @@ export class HomeView extends View {
     const d = new Date();
     const dayNum = Math.floor(d.getTime() / 86400000);
     return dayNum % TIPS.length;
+  }
+
+  _renderGamification() {
+    const container = document.getElementById('gam-home');
+    if (!container) return;
+
+    const g = gamificationStore;
+    const pct = Math.round(g.dailyProgress * 100);
+
+    container.innerHTML = `
+      <div class="gamification-home">
+        <div class="gam-stat-card">
+          <div class="gam-stat-icon">🔥</div>
+          <div class="gam-stat-value">${g.streak}</div>
+          <div class="gam-stat-label">Day Streak</div>
+        </div>
+        <div class="gam-stat-card">
+          <div class="gam-stat-icon">⭐</div>
+          <div class="gam-stat-value">${g.totalXP}</div>
+          <div class="gam-stat-label">Total XP</div>
+        </div>
+        <div class="gam-stat-card">
+          <div class="gam-stat-icon">📊</div>
+          <div class="gam-stat-value">Lv ${g.level}</div>
+          <div class="gam-stat-label">Your Level</div>
+        </div>
+        <div class="gam-stat-card">
+          <div class="gam-stat-icon">🎯</div>
+          <div class="gam-stat-value">${g.todayXP}/${g.dailyGoal}</div>
+          <div class="gam-stat-label">Daily Goal</div>
+          <div class="daily-goal-bar"><div class="daily-goal-fill" style="width:${pct}%"></div></div>
+        </div>
+      </div>
+      <h3 style="margin-top:2rem;margin-bottom:.5rem">🏆 Achievements</h3>
+      <div class="achievements-grid">
+        ${g.achievements.map(a => `
+          <div class="ach-card ${a.unlocked ? 'unlocked' : ''}">
+            <div class="ach-icon">${a.icon}</div>
+            <div class="ach-title">${a.title}</div>
+            <div class="ach-desc">${a.desc}</div>
+          </div>
+        `).join('')}
+      </div>`;
   }
 }

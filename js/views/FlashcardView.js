@@ -3,6 +3,7 @@ import { progressStore } from '../core/ProgressStore.js';
 import { speechService } from '../core/SpeechService.js';
 import { srsEngine }     from '../core/SRSEngine.js';
 import { escHtml, shuffle, setActiveTab } from '../core/utils.js';
+import { gamificationStore } from '../core/GamificationStore.js';
 
 export class FlashcardView extends View {
   constructor() {
@@ -159,6 +160,7 @@ export class FlashcardView extends View {
         }
 
         if (id === 'fc-easy') progressStore.markLearned(this._level, word.char);
+        gamificationStore.recordFlashcardReview();
         this._next();
         this._updateSRSStats();
       });

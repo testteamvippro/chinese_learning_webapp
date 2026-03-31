@@ -19,7 +19,7 @@ class SpeechService {
     window.speechSynthesis.cancel();
     const utt  = new SpeechSynthesisUtterance(text);
     utt.lang  = lang;
-    utt.rate  = rate;
+    utt.rate  = Math.max(0.1, Math.min(10, rate));
     window.speechSynthesis.speak(utt);
   }
 

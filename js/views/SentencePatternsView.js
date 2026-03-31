@@ -19,11 +19,15 @@ export class SentencePatternsView extends View {
   constructor() {
     super('sentencepatterns');
     this._state = { query: '', category: 'all', level: 0, showPy: true };
+    this._bound = false;
   }
 
   onActivate() {
     this._render();
-    this._bindEvents();
+    if (!this._bound) {
+      this._bindEvents();
+      this._bound = true;
+    }
   }
 
   _filtered() {
@@ -50,7 +54,6 @@ export class SentencePatternsView extends View {
       <div class="spt-stats">${filtered.length} pattern${filtered.length !== 1 ? 's' : ''} found</div>
       <div class="spt-grid">${filtered.map(p => this._renderCard(p)).join('') || '<p class="spt-empty">No patterns match your filters.</p>'}</div>
     `;
-    this._restoreEvents();
   }
 
   _renderControls() {
@@ -98,33 +101,36 @@ export class SentencePatternsView extends View {
   }
 
   _bindEvents() {
-    const searchEl = document.getElementById('spt-search');
-    if (searchEl && !searchEl.dataset.bound) {
-      searchEl.dataset.bound = '1';
-      searchEl.addEventListener('input', e => {
+    const root = document.getElementById('sentencepatterns-root');
+    if (!root) return;
+
+    // Use event delegation for all interactive elements
+    root.addEventListener('input', e => {
+      if (e.target.id === 'spt-search') {
         this._state.query = e.target.value;
         this._render();
-      });
-    }
-    this._restoreEvents();
-  }
+      }
+    });
 
-  _restoreEvents() {
-    document.getElementById('spt-cat-row')?.querySelectorAll('.spt-cat-pill').forEach(btn => {
-      btn.addEventListener('click', () => {
-        this._state.category = btn.dataset.cat;
+    root.addEventListener('click', e => {
+      const catPill = e.target.closest('.spt-cat-pill');
+      if (catPill) {
+        this._state.category = catPill.dataset.cat;
         this._render();
-      });
-    });
-    document.getElementById('spt-level-row')?.querySelectorAll('.spt-level-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        this._state.level = parseInt(btn.dataset.lv, 10);
+        return;
+      }
+
+      const levelBtn = e.target.closest('.spt-level-btn');
+      if (levelBtn) {
+        this._state.level = parseInt(levelBtn.dataset.lv, 10);
         this._render();
-      });
-    });
-    document.getElementById('spt-py-toggle')?.addEventListener('click', () => {
-      this._state.showPy = !this._state.showPy;
-      this._render();
+        return;
+      }
+
+      if (e.target.id === 'spt-py-toggle') {
+        this._state.showPy = !this._state.showPy;
+        this._render();
+      }
     });
   }
 }

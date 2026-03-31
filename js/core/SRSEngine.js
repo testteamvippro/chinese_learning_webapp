@@ -62,6 +62,7 @@ class SRSEngine {
    * @param {number} quality  0–5 (Hard=1, OK=3, Easy=5)
    */
   review(level, char, quality) {
+    quality = Math.max(0, Math.min(5, Math.round(quality)));
     const card = this.getCard(level, char);
     const now  = Date.now();
 

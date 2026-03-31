@@ -26,7 +26,9 @@ class ProgressStore {
   }
 
   _save() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(this._data));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(this._data));
+    } catch { /* quota exceeded — data stays in memory */ }
   }
 
   // ---- Public API ----
